@@ -24,7 +24,7 @@ func read(path):
                   "(?<Disambiguation>(?:[a-h]|[1-8]|[a-h][1-8])(?=x?[a-h][1-8]))?"+
                   "(?<Capture>x)?"+
                   "(?<Location>[a-h][1-8])"+
-                  "(?<Promotion>=[NKQRB])?"+
+                  "(?:=(?<Promotion>[NKQRB]))?"+
                   "(?<Check>[+#])?")
     var castleRE = "O-O(-O)?"
     var commentRE = "\\{(?<comment>[^}]+)\\}"
@@ -47,12 +47,16 @@ func read(path):
         turns.push_back(currTurn)
         
     for turn in turnRE.search_all(content):
-        currTurn = calc_turn(Turn.COLOUR.WHITE, currTurn.positions, turn)
+        currTurn = Turn.new(Turn.COLOUR.WHITE, currTurn.positions, turn, currTurn.promotions)
         turns.push_back(currTurn)
-        currTurn = calc_turn(Turn.COLOUR.BLACK, currTurn.positions, turn)
+        currTurn = Turn.new(Turn.COLOUR.BLACK, currTurn.positions, turn, currTurn.promotions)
         turns.push_back(currTurn)
         if currTurn.turnNo > 2:
             break
+    
+    for turn in turns:
+        print(turn.raw)
+        print(turn.positions)
     
     print(turns)
 
