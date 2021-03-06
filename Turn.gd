@@ -27,6 +27,7 @@ var player : int
 var comment : String = ""
 var positions : Dictionary
 var capture : bool = false
+var captureLocation = null
 var check : int = 0
 var promote : String
 var promotions : int = 0
@@ -59,10 +60,13 @@ func standard_start():
 
 func which_piece(colour, label, disamb, pos) -> String:
     var check : String
-    if colour == COLOUR.WHITE:
-        check = "W"
-    else:
-        check = "B"
+    match colour:
+        COLOUR.WHITE:
+            check = "W"
+        COLOUR.BLACK:
+            check = "B"
+        _:
+            return "Not found"
 
     if not label:
         label = "P"
@@ -87,7 +91,8 @@ func which_piece(colour, label, disamb, pos) -> String:
     var grid_pos = to_grid(pos)
 
     for poss in possibles:
-        var ref = (grid_pos - positions[poss]).abs()
+        var raw = (grid_pos - positions[poss]) # Raw useful for checking pawns moving in right dir.
+        var ref = raw.abs()
         match label:
             "Q":
                 if ref.x == 0 or ref.y == 0 or ref.x == ref.y:
@@ -105,20 +110,22 @@ func which_piece(colour, label, disamb, pos) -> String:
                 if ref.x == ref.y:
                     return poss
             "P":
-                if self.capture:
-                    if ref.y == colour and abs(ref.x) == 1:
+                if ((colour == COLOUR.WHITE and positions[poss].y == 2) or # Initial move of two
+                    (colour == COLOUR.BLACK and positions[poss].y == 7)):
+                    if raw.y in [colour, 2*colour]:
                         return poss
-                if ((self.colour == COLOUR.WHITE and positions[poss].y == 2) or # Initial move of two
-                    (self.colour == COLOUR.BLACK and positions[poss].y == 7)):
-                    if ref.y in [self.colour, 2*self.colour]:
-                        return poss
-                    # En passant
+                    # En passant?
                     if self.capture:
-                        pass
-                    
+                        if ref.x == 1 and raw.y in [colour, 2*colour]:
+                            self.captureLocation = positions[poss] + Vector2(1,1)
+                            return poss
                 else:
-                    if ref.y == colour:
+                    if self.capture:
+                        if raw.y == colour and ref.x == 1:
+                            return poss
+                    if raw.y == colour:
                         return poss
+    print(piece, colour, label)
     return "Not found"
 
 func to_grid(pos: String) -> Vector2:
@@ -133,9 +140,13 @@ func move(piece, location):
         piece = self.get_colour() + self.promote + char(65+self.promotions)
         self.promotions += 1
 
+
     self.positions[piece] = self.to_grid(location)
 
     if self.capture:
+        if self.captureLocation != null:
+            location = self.captureLocation    
+        
         for capturedPiece in self.positions:
             if self.positions[capturedPiece] == location:
                 self.positions.erase(capturedPiece)

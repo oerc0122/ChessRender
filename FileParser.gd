@@ -44,6 +44,7 @@ func read(path):
     var currTurn
     if not "setup" in data:
         currTurn = Turn.new().standard_start()
+        currTurn.raw = "0. Start game"
         turns.push_back(currTurn)
         
     for turn in turnRE.search_all(content):
