@@ -49,3 +49,4 @@ tile_data = PoolIntArray( 65537, 1, 0, 65538, 0, 0, 65539, 1, 0, 65540, 0, 0, 65
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( 320, 320 )
 current = true
+[connection signal="read" from="FileParser" to="." method="update_turns"]

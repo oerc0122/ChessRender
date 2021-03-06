@@ -7,8 +7,8 @@ var turnID = 0
 var nTurns = 0
 signal turn_updated
 
-func _ready():
-    nTurns = len($FileParser.turns)
+func update_turns():
+    self.nTurns = len($FileParser.turns)
 
 func _input(event: InputEvent) -> void:
     if event.is_action_pressed('ui_right'):
@@ -17,11 +17,11 @@ func _input(event: InputEvent) -> void:
         self.prev_turn()
         
 func next_turn():
-    turnID = clamp(turnID+1, 0, nTurns-1)
+    self.turnID = clamp(self.turnID+1, 0, nTurns-1)
     load_turn(turnID)       
 
 func prev_turn():
-    turnID = clamp(turnID-1, 0, nTurns-1)
+    self.turnID = clamp(self.turnID-1, 0, nTurns-1)
     load_turn(turnID)
     
 func load_turn(turn: int):
