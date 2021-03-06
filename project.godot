@@ -21,7 +21,7 @@ _global_script_class_icons={
 [application]
 
 config/name="ChessRender"
-run/main_scene="res://MainGame.tscn"
+run/main_scene="res://UI.tscn"
 config/icon="res://icon.png"
 
 [rendering]
