@@ -3,6 +3,7 @@
 [ext_resource path="res://ChessSprite.png" type="Texture" id=1]
 
 [node name="Piece" type="Sprite"]
+scale = Vector2( 0.3, 0.3 )
 texture = ExtResource( 1 )
 vframes = 2
 hframes = 6

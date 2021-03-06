@@ -1,5 +1,6 @@
 extends Node
 
+var path := ""
 var data := {}
 var turns := []
 const COLOURS = ["White", "Black"]
@@ -8,11 +9,12 @@ func _ready():
     self.read('test.pgn')
 
 func read(path):
+    self.path = path
     var file := File.new()
-    var status = file.open(path, File.READ)
+    var status = file.open(self.path, File.READ)
     
     if status:
-        printerr("Cannot open file: ", path)
+        printerr("Cannot open file: ", self.path)
     var content := file.get_as_text()
     file.close()
 
@@ -43,7 +45,7 @@ func read(path):
 
     var currTurn
     if not "setup" in data:
-        currTurn = Turn.new().standard_start()
+        currTurn = Turn.new()
         currTurn.raw = "0. Start game"
         turns.push_back(currTurn)
         
@@ -52,12 +54,5 @@ func read(path):
         turns.push_back(currTurn)
         currTurn = Turn.new(Turn.COLOUR.BLACK, currTurn.positions, turn, currTurn.promotions)
         turns.push_back(currTurn)
-        if currTurn.turnNo > 2:
-            break
     
-    for turn in turns:
-        print(turn.raw)
-        print(turn.positions)
-    
-    print(turns)
 
