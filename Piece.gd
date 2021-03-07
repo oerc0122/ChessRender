@@ -1,16 +1,46 @@
-extends Label
+extends Sprite
 
+enum TYPES {KING, QUEEN, BISHOP, KNIGHT, ROOK, PAWN}
+enum COLOUR {WHITE=0, BLACK=1}
+const PAWN_DIR = [-1, 1]
+const KNIGHT_MOVES = [Vector2(1,2),
+                      Vector2(-1,2),
+                      Vector2(-1,-2),
+                      Vector2(1,-2),
+                      Vector2(2,1),
+                      Vector2(-2,1),
+                      Vector2(-2,-1),
+                      Vector2(2,-1)]
 
-# Declare member variables here. Examples:
-# var a: int = 2
-# var b: String = "text"
+var gridPos : Vector2
+var type : int
+var moved : bool = false
+var colour : int
+onready var board = get_parent()
 
+func init(colour: int, type: int) -> void:
+    self.colour = colour
+    self.type = type
+    self.set_frame(colour*6 + type)
 
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-    pass # Replace with function body.
+func can_move(newLoc, capture=false) -> bool:
+    var raw = newLoc - self.gridPos
+    var ref = raw.abs()
+    match type:
+        TYPES.QUEEN:
+            return ref.x == 0 or ref.y == 0 or ref.x == ref.y
+        TYPES.KING:
+            return ref.length_squared < 2
+        TYPES.KNIGHT:
+            return ref in KNIGHT_MOVES
+        TYPES.ROOK:
+            return ref.x == 0 or ref.y == 0
+        TYPES.BISHOP:
+            return ref.x == ref.y
+        TYPES.PAWN:
+            if not self.moved:
+                return ref.x == int(capture) and raw in [PAWN_DIR[self.colour], PAWN_DIR[self.colour]*2]
+            else:
+                return ref.x == int(capture) and raw == PAWN_DIR[self.colour]
+    return false
 
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta: float) -> void:
-#    pass

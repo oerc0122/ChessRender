@@ -1,11 +1,10 @@
 extends Node
 
-var piece = load("res://Piece.tscn")
-const TILE_OFFSET := Vector2(32,32)
-
 var turnID = 0
 var nTurns = 0
 signal turn_updated
+var fileParsers := []
+var currFileParser = 0
 
 func update_turns():
     self.nTurns = len($FileParser.turns)
@@ -30,12 +29,5 @@ func load_turn(turn: int):
     for child in $Board.get_children(): # Clear old children
        child.queue_free()
     for pos in currTurn.positions:
-        var currPiece = piece.instance()
-        var loc = $Board.map_to_world(currTurn.positions[pos])
-        currPiece.frame = "KQBNRP".find(pos[1])
-        currPiece.name = pos
-        if pos[0] == "B":
-            currPiece.frame+=6
-        currPiece.position = loc + TILE_OFFSET
-        $Board.add_child(currPiece)
+        $Board.add_piece("WB".find(pos[0]),"KQBNRP".find(pos[1]),currTurn.positions[pos])
     emit_signal("turn_updated", self.turnID)
