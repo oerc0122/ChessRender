@@ -32,9 +32,7 @@ func can_move(newLoc, capture=false) -> bool:
         TYPES.QUEEN:
             return ref.x == 0 or ref.y == 0 or ref.x == ref.y
         TYPES.KING:
-            print(self.moved, newLoc, self.colour*7+1)
             if not self.moved and newLoc in [Vector2(3, self.colour*7+1), Vector2(7, self.colour*7+1)]:
-                print("Hello")
                 match int(newLoc.x):
                     3:
                         if (not newLoc in board.positions and
