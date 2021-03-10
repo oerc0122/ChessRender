@@ -1,9 +1,15 @@
 extends Control
 
-onready var game = $ViewportContainer/Viewport/MainGame
-onready var parser = $ViewportContainer/Viewport/MainGame/FileParser
+onready var game = $MainGame
+onready var parser = game.get_node("FileParser")
 onready var turnsList = $PanelContainer/VBoxContainer/Turns/VBoxContainer
 var lastTurn = 0
+
+func _ready():
+    var file = File.new()
+    file.open("res://tmp.pgn", File.WRITE)
+    file.close()
+    load_file("res://tmp.pgn")
 
 func load_file(path):
     parser.read(path)

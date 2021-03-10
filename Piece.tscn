@@ -13,3 +13,4 @@ frame = 11
 script = ExtResource( 2 )
 
 [node name="Draggable" parent="." instance=ExtResource( 3 )]
+[connection signal="stopdrag" from="Draggable" to="." method="_on_Draggable_stopdrag"]

@@ -5,6 +5,7 @@ var nTurns = 0
 signal turn_updated
 var fileParsers := []
 var currFileParser = 0
+var currTurn = 0
 
 func update_turns():
     self.nTurns = len($FileParser.turns)
@@ -31,3 +32,7 @@ func load_turn(turn: int):
     for pos in currTurn.positions:
         $Board.add_piece("WB".find(pos[0]),"KQBNRP".find(pos[1]),currTurn.positions[pos])
     emit_signal("turn_updated", self.turnID)
+
+
+func _on_Board_piece_moved(SAN) -> void:
+    self.currTurn = 1 - self.currTurn

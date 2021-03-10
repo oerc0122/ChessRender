@@ -2,12 +2,16 @@ extends Node
 
 var path := ""
 var data := {}
-var turns := []
+var turns := [Turn.new()]
 const COLOURS = ["White", "Black"]
 signal read
 signal error(title, message) 
 
+func _ready():
+    turns = [Turn.new()]
+
 func read(filepath):
+    self.turns = []
     self.path = filepath
     var file := File.new()
     var status = file.open(self.path, File.READ)
