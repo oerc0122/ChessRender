@@ -9,12 +9,30 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Node",
+"class": "FileParser",
+"language": "GDScript",
+"path": "res://FileParser.gd"
+}, {
+"base": "Resource",
+"class": "Game",
+"language": "GDScript",
+"path": "res://Game.gd"
+}, {
+"base": "Sprite",
+"class": "Piece",
+"language": "GDScript",
+"path": "res://Piece.gd"
+}, {
 "base": "Resource",
 "class": "Turn",
 "language": "GDScript",
 "path": "res://Turn.gd"
 } ]
 _global_script_class_icons={
+"FileParser": "",
+"Game": "",
+"Piece": "",
 "Turn": ""
 }
 

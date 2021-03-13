@@ -1,7 +1,8 @@
 extends Resource
 class_name Turn
 
-enum COLOUR {WHITE=1, BLACK=-1}
+enum COLOUR {WHITE=0, BLACK=1}
+const PAWN_DIR = [1, -1]
 const COLOUR_NAMES = {COLOUR.WHITE:"White", COLOUR.BLACK:"Black"}
 const LET = {"a":1, "b":2, "c":3, "d":4, "e":5, "f":6, "g":7, "h":8}
 const NUM = {1:"a", 2:"b", 3:"c", 4:"d", 5:"e", 6:"f", 7:"g", 8:"h"}
@@ -13,15 +14,16 @@ const KNIGHT_MOVES = [Vector2(1,2),
                       Vector2(-2,1),
                       Vector2(-2,-1),
                       Vector2(2,-1)]
-const STARTING_BOARD_STATE = {"WR1":Vector2(1,1),"WN1":Vector2(2,1),"WB1":Vector2(3,1),"WQ":Vector2(4,1),"WK":Vector2(5,1),"WB2":Vector2(6,1),"WN2":Vector2(7,1),"WR2":Vector2(8,1),
+const STARTING_BOARD_STATE = {"WR1":Vector2(1,1),"WN1":Vector2(2,1),"WB1":Vector2(3,1),"WQ1":Vector2(4,1),"WK1":Vector2(5,1),"WB2":Vector2(6,1),"WN2":Vector2(7,1),"WR2":Vector2(8,1),
                               "WP1":Vector2(1,2),"WP2":Vector2(2,2),"WP3":Vector2(3,2),"WP4":Vector2(4,2),"WP5":Vector2(5,2),"WP6":Vector2(6,2),"WP7":Vector2(7,2),"WP8":Vector2(8,2),
-                              "BR1":Vector2(1,8),"BN1":Vector2(2,8),"BB1":Vector2(3,8),"BQ":Vector2(4,8),"BK":Vector2(5,8),"BB2":Vector2(6,8),"BN2":Vector2(7,8),"BR2":Vector2(8,8),
+                              "BR1":Vector2(1,8),"BN1":Vector2(2,8),"BB1":Vector2(3,8),"BQ1":Vector2(4,8),"BK1":Vector2(5,8),"BB2":Vector2(6,8),"BN2":Vector2(7,8),"BR2":Vector2(8,8),
                               "BP1":Vector2(1,7),"BP2":Vector2(2,7),"BP3":Vector2(3,7),"BP4":Vector2(4,7),"BP5":Vector2(5,7),"BP6":Vector2(6,7),"BP7":Vector2(7,7),"BP8":Vector2(8,7)}
 
 
 var raw : String
 var ID : String
 var piece : String
+var from : String
 var location : String
 var turnNo : int
 var player : int
@@ -33,8 +35,7 @@ var check : int = 0
 var promote : String
 var promotions : int = 0
 
-
-func _init(colour: int = COLOUR.WHITE, boardState: Dictionary = STARTING_BOARD_STATE, turn: RegExMatch = null, nPromotions: int = 0, comment = null):
+func _init(colour: int = COLOUR.BLACK, boardState: Dictionary = STARTING_BOARD_STATE, turn: RegExMatch = null, nPromotions: int = 0, commentOverride = null):
     self.player = colour
     self.positions = boardState.duplicate()
     self.promotions = nPromotions
@@ -52,15 +53,16 @@ func _init(colour: int = COLOUR.WHITE, boardState: Dictionary = STARTING_BOARD_S
                                                 turn.get_string(self.get_colour()+"Disambiguation"),
                                                 turn.get_string(self.get_colour()+"Location"))
             self.location = turn.get_string(self.get_colour()+"Location")
+            self.from = from_grid(self.positions[self.piece])
             self.move(self.piece, self.location)
-            self.ID = self.get_colour() + " : " + self.piece[1] + self.from_grid(boardState[self.piece]) + " -> " + self.location
+            self.ID = self.get_ID()
         self.comment = turn.get_string("Comment")
     else:
         self.turnNo = 0
         self.ID = "Board start"
 
     if comment:
-        self.comment += "; "+ comment
+        self.comment += "; "+ commentOverride
 
 func which_piece(colour, label, disamb, pos) -> String:
     var search : String
@@ -130,8 +132,10 @@ func which_piece(colour, label, disamb, pos) -> String:
                             return poss
                     if ref.x == 0 and rawLoc.y == colour:
                         return poss
+
     printerr(piece, " ", get_colour(), " ", label, " ", pos, " ", to_grid(pos))
     printerr(positions)
+    null.get_node("Crash")
     return "Not found"
 
 func to_grid(pos: String) -> Vector2:
@@ -140,7 +144,7 @@ func to_grid(pos: String) -> Vector2:
 func from_grid(pos: Vector2) -> String:
     return NUM[int(pos.x)] + str(pos.y)
 
-func move(piece, location):
+func move(piece, newLoc):
     if self.promote:
         self.positions.erase(piece)
         piece = self.get_colour()[0] + self.promote + char(65+self.promotions)
@@ -148,29 +152,34 @@ func move(piece, location):
 
     if self.capture:
         if self.captureLocation != null:
-            location = self.captureLocation    
+            newLoc = self.captureLocation    
         
         for capturedPiece in self.positions:
-            if self.positions[capturedPiece] == self.to_grid(location):
+            if self.positions[capturedPiece] == self.to_grid(newLoc):
                 self.positions.erase(capturedPiece)
 
-    self.positions[piece] = self.to_grid(location)
+    self.positions[piece] = self.to_grid(newLoc)
 
 func castling(kingside: bool):
     if kingside:
         if self.player == COLOUR.WHITE:
-            self.move("WK", "g1")
+            self.move("WK1", "g1")
             self.move("WR2", "f1")
         else:
-            self.move("BK", "g8")
+            self.move("BK1", "g8")
             self.move("BR2", "f8")
     else:
         if self.player == COLOUR.WHITE:
-            self.move("WK", "c1")
+            self.move("WK1", "c1")
             self.move("WR2", "d1")
         else:
-            self.move("BK", "c8")
+            self.move("BK1", "c8")
             self.move("BR2", "d8")
-        
+            
+func get_ID() -> String:
+    return "{turn}:{piece}{from} -> {to}".format({'turn':self.get_colour(), 
+                                                  'piece':self.piece[1], 
+                                                  'from':self.from,
+                                                  'to':self.location})
 func get_colour() -> String:
     return COLOUR_NAMES[self.player]

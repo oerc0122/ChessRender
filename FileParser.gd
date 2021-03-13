@@ -1,23 +1,19 @@
 extends Node
+class_name FileParser
 
 var path := ""
-var data := {}
-var turns := [Turn.new()]
 const COLOURS = ["White", "Black"]
-signal read
+signal read(game)
 signal error(title, message) 
 
-func _ready():
-    turns = [Turn.new()]
-
-func read(filepath):
-    self.turns = []
+func read(filepath) -> Game:
     self.path = filepath
     var file := File.new()
     var status = file.open(self.path, File.READ)
     
     if status:
-        printerr("Cannot open file: ", self.path)
+        push_error("File not found: Cannot open file: "+self.path)
+        null.get_node("crash")
     var content := file.get_as_text()
     file.close()
 
@@ -41,31 +37,34 @@ func read(filepath):
 
     content = rawCommentRE.sub(content, "{$comment}", true).strip_escapes()
 
+    var loaded = Game.new()
+    loaded.path = filepath.get_file()
     for tag in tagRE.search_all(content):
-        data[tag.get_string("key")] = tag.get_string("value")
+        loaded.data[tag.get_string("key")] = tag.get_string("value")
         content = content.replace(tag.get_string(), "")
 
-
     var currTurn : Turn
-    if not "SetUp" in data:
+    if not "SetUp" in loaded.data:
         currTurn = Turn.new()
         currTurn.raw = "0. Start game"
     else:
-        if not "FEN" in data:
+        if not "FEN" in loaded.data:
             emit_signal("error", "Bad input pgn", "FEN data not found")
-        currTurn = parse_FEN(data["FEN"])
+        currTurn = parse_FEN(loaded.data["FEN"])
         currTurn.raw = "0. Start game"
         currTurn.ID = "Start Game"
-    turns.push_back(currTurn)
+
+    loaded.turns = [currTurn]
         
         
     for turn in turnRE.search_all(content):
         currTurn = Turn.new(Turn.COLOUR.WHITE, currTurn.positions, turn, currTurn.promotions)
-        turns.push_back(currTurn)
+        loaded.turns.push_back(currTurn)
         currTurn = Turn.new(Turn.COLOUR.BLACK, currTurn.positions, turn, currTurn.promotions)
-        turns.push_back(currTurn)
+        loaded.turns.push_back(currTurn)
         
-    emit_signal("read")
+    emit_signal("read", loaded)
+    return loaded
 
 func parse_FEN(FEN: String):
     # Parse FEN notation of the form:

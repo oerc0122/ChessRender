@@ -1,0 +1,46 @@
+[gd_scene format=2]
+
+[node name="PromoteDialogue" type="WindowDialog"]
+margin_left = 718.519
+margin_top = 19.409
+margin_right = 1118.52
+margin_bottom = 159.409
+window_title = "Promote"
+__meta__ = {
+"_edit_group_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="GridContainer" type="HBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Queen" type="Button" parent="GridContainer"]
+margin_right = 97.0
+margin_bottom = 140.0
+size_flags_horizontal = 3
+text = "Queen"
+
+[node name="Knight" type="Button" parent="GridContainer"]
+margin_left = 101.0
+margin_right = 198.0
+margin_bottom = 140.0
+size_flags_horizontal = 3
+text = "Knight"
+
+[node name="Bishop" type="Button" parent="GridContainer"]
+margin_left = 202.0
+margin_right = 299.0
+margin_bottom = 140.0
+size_flags_horizontal = 3
+text = "Bishop"
+
+[node name="Rook" type="Button" parent="GridContainer"]
+margin_left = 303.0
+margin_right = 400.0
+margin_bottom = 140.0
+size_flags_horizontal = 3
+text = "Rook"
