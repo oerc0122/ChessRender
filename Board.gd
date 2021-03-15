@@ -17,6 +17,7 @@ var promoteTo = 0
 func add_piece(colour, type, pos, has_moved:bool = false):
     if pos in self.positions: # Occupied
         push_error("Cannot add piece. Tile "+str(pos)+" occupied")
+        push_error("%d %d" % [colour, type])
         null.get_node("Crash")
 
     var piece = PIECE.instance()
@@ -44,11 +45,12 @@ func add_piece(colour, type, pos, has_moved:bool = false):
     
 func remove_piece(piece):
     self.positions.erase(piece)
+    self.remove_child(piece)
     piece.queue_free()
     
 func clear_board():
-    for piece in self.positions:
-        self.positions[piece].queue_free()
+    for piece in self.positions.values():
+        self.remove_piece(piece)
     self.positions.clear()
     
 func update_piece(piece, location: Vector2):
@@ -98,11 +100,10 @@ func move_piece(pos:Vector2, newLoc:Vector2):
 
     if target:
         self.remove_piece(target)
-        
+
     self.update_piece(moving, newLoc)
     
     if moving.type == moving.TYPES.PAWN and newLoc.y == 7*(1-moving.colour)+1:
-        print(self.get_children())
         $PromoteDialogue.popup_centered()
         yield(self, "promoted")
         turn.promotions = self.promoteTo

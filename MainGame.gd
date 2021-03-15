@@ -40,9 +40,9 @@ func load_turn(turn: int, loadGame: int = -1):
 
 func _on_Board_piece_moved(turn) -> void:
     self.currPlayer = 1 - self.currPlayer
-
-    if currTurn < currGame.nTurns()-1: # Branching game
-        var newBranch = branch()
+    var branching = currTurn < currGame.nTurns()-1
+    if branching:
+        var newBranch = branch(currGame, currTurn)
         self.games.push_back(newBranch)
         emit_signal("branch", newBranch)
         load_turn(self.currTurn, len(games)-1)
@@ -50,6 +50,8 @@ func _on_Board_piece_moved(turn) -> void:
     self.currGame.turns.push_back(turn)
     emit_signal("new_turn", self.currGameIndex, turn)
     self.currTurn += 1    
+    if branching:
+        load_turn(self.currTurn, len(games)-1)
     emit_signal("turn_updated", self.currTurn, self.currGameIndex)
 
 func _on_FileParser_read(game) -> void:
@@ -59,12 +61,11 @@ func branch(toCopy: Game = null, turn: int = -1) -> Game:
     if not toCopy:
         toCopy = self.currGame
     if turn < 0:
-        turn = self.currTurn-1
+        turn = self.currTurn
 
     var copy = Game.new()    
     copy.data = toCopy.data
-    copy.turns = toCopy.turns.slice(0, turn-1)
-
+    copy.turns = toCopy.turns.slice(0, turn)
     var basename = toCopy.path.split(':')[0]
     var num = 0
     for game in self.games:
