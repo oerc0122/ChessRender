@@ -57,10 +57,10 @@ func update_piece(piece, location: Vector2):
     if piece.gridPos in self.positions:
         self.positions.erase(piece.gridPos)
     piece.gridPos = location
-    piece.position = self.map_to_world(piece.gridPos) + TILE_OFFSET
     piece.moved = true
     self.positions[piece.gridPos] = piece
-    
+    piece.move_to_pos()
+
 func move_piece(pos:Vector2, newLoc:Vector2):
     if not pos in self.positions:
         emit_signal("error","Cannot move piece", "No piece in position")

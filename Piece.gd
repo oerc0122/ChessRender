@@ -21,6 +21,10 @@ onready var board = get_parent()
 var castled : int = 0
 var ID : String
 
+func _process(delta: float) -> void:
+    if $Draggable.dragging:
+        self.position = get_global_mouse_position()
+
 func init(colour: int, type: int) -> void:
     self.colour = colour
     self.type = type
@@ -30,14 +34,7 @@ func init(colour: int, type: int) -> void:
 func can_move(newLoc, capture=false) -> bool:
     var raw = newLoc - self.gridPos
     var ref = raw.abs()
-    
-#    if type != TYPES.KNIGHT:
-#        $RayCast2D.cast_to = raw*64
-#        $RayCast2D.force_raycast_update()
-#        print($RayCast2D.cast_to, $RayCast2D.is_colliding())
-#        if $RayCast2D.is_colliding():
-#            return false
-    
+        
     match type:
         TYPES.QUEEN:
             return ref.x == 0 or ref.y == 0 or ref.x == ref.y
@@ -75,9 +72,13 @@ func can_move(newLoc, capture=false) -> bool:
     return false
 
 func _on_Draggable_stopdrag() -> void:
-    var mousePos = get_viewport().get_mouse_position()
+    var mousePos = get_global_mouse_position()
     var newPos = board.world_to_map(mousePos)
     board.move_piece(self.gridPos, newPos)
+    move_to_pos()
+
+func move_to_pos():
+    self.position = board.map_to_world(self.gridPos) + board.TILE_OFFSET
 
 func get_ID() -> String:
     return "WB"[self.colour] + TYPES_SAN[self.type]

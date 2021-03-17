@@ -1,10 +1,11 @@
 extends Control
 
-onready var game := $MainGame
+onready var game := get_parent().get_node("ViewportContainer/MainGame")
 onready var parser := game.get_node("FileParser")
-onready var tabs := $PanelContainer/VBoxContainer/TurnsTabber
-onready var filePath := $PanelContainer/VBoxContainer/HBoxContainer3/Path
-onready var details := $PanelContainer/VBoxContainer/GameDetails
+onready var UI := $UIPanel/VBoxContainer
+onready var tabs := UI.get_node("TurnsTabber")
+onready var filePath := UI.get_node("FileControl/Path")
+onready var details := UI.get_node("GameDetails")
 var lastTurn = 0
 var lastGame = 0
 var TurnsTab = preload("res://TurnHolder.tscn")
@@ -16,7 +17,7 @@ func _ready():
     load_file("res://tmp.pgn", true)
 
 func set_headers():
-    var currGame = $MainGame.currGame
+    var currGame = game.currGame
     details.text = currGame.path+"\n"
     for data in currGame.data:
         details.text += data+" : "+currGame.data[data]+"\n"
@@ -47,9 +48,6 @@ func new_turn(game: int, turn: Turn):
     button.connect('pressed', self, 'set_turn', [i, game])
     turnsList.add_child(button)
 
-func quit():
-    get_tree().quit()
-
 func update_turn(newTurn, newGame):
     var turnsList = tabs.get_tab_control(self.lastGame).get_node("TurnsList")
     turnsList.get_child(lastTurn).disabled = false
@@ -59,16 +57,10 @@ func update_turn(newTurn, newGame):
     self.lastTurn = newTurn
     self.lastGame = newGame
     set_headers()
-    $PanelContainer/VBoxContainer/HBoxContainer/TurnNo.text = str(game.currGame.turns[newTurn].turnNo)
+    UI.get_node("TurnDetails/TurnNo").text = str(game.currGame.turns[newTurn].turnNo)
 
 func set_turn(turn: int, idx: int = -1):
     self.game.load_turn(turn, idx)
-
-func _on_prevTurn_button_up() -> void:
-    self.game.prev_turn()
-
-func _on_nextTurn_button_up() -> void:
-    self.game.next_turn()
 
 func _on_Search_pressed() -> void:
     $FileDialog.popup_centered()
@@ -87,7 +79,6 @@ func _on_SaveGame_pressed() -> void:
     _error("Not implemented", "Saving of games not currently implemented")
 
 func _on_CloseGame_pressed() -> void:
-    print(tabs.get_children())
     var idx = tabs.get_current_tab()
     
     # Delete from stored games
@@ -108,6 +99,13 @@ func _on_CloseGame_pressed() -> void:
         game.load_turn(0,0)
         
 func _error(title: String, message: String):
-    $ErrorPopup.window_title = title
-    $ErrorPopup/ErrorMessage.text = message
-    $ErrorPopup.popup_centered()
+    get_tree().get_root().get_node("Root").error(title, message)
+
+func _on_nextTurn_pressed() -> void:
+    self.game.next_turn()
+
+func _on_prevTurn_pressed() -> void:
+    self.game.prev_turn()
+
+func _on_QuitButton_pressed() -> void:
+    get_tree().quit()

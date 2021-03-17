@@ -3,7 +3,7 @@ extends Node
 var currTurn = 0
 signal turn_updated(turn, game)
 signal new_turn(game, turn)
-signal branch(game, branchName)
+signal branch(game)
 var games := []
 var currGameIndex = 0
 var currGame : Game
@@ -75,3 +75,6 @@ func branch(toCopy: Game = null, turn: int = -1) -> Game:
     
     copy.path = basename + ":" + str(num+1)
     return copy
+
+func _error(title, message):
+    get_tree().get_root().get_node("Root").error(title, message) 

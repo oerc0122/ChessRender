@@ -14,8 +14,4 @@ script = ExtResource( 2 )
 
 [node name="Draggable" parent="." instance=ExtResource( 3 )]
 collision_mask = 524288
-
-[node name="RayCast2D" type="RayCast2D" parent="."]
-collision_mask = 524288
-collide_with_areas = true
 [connection signal="stopdrag" from="Draggable" to="." method="_on_Draggable_stopdrag"]

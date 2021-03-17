@@ -65,6 +65,7 @@ func _init(colour: int = COLOUR.BLACK, boardState: Dictionary = STARTING_BOARD_S
         self.comment += "; "+ commentOverride
 
 func which_piece(colour, label, disamb, pos) -> String:
+    # Determine which piece moved for parsing a FEN or PGN game
     var search : String
     match colour:
         COLOUR.WHITE:
@@ -85,7 +86,7 @@ func which_piece(colour, label, disamb, pos) -> String:
 
     if len(possibles) == 0:
         printerr("No possible piece found")
-        return "Not found"
+        null.get_node("Crash")
     elif len(possibles) == 1:
         return possibles[0]
 
@@ -117,34 +118,36 @@ func which_piece(colour, label, disamb, pos) -> String:
                 if ref.x == ref.y:
                     return poss
             "P":
+                var moveDir = self.PAWN_DIR[colour]
                 if ((colour == COLOUR.WHITE and positions[poss].y == 2) or # Initial move of two
                     (colour == COLOUR.BLACK and positions[poss].y == 7)):
-                    if ref.x == 0 and rawLoc.y in [colour, 2*colour]:
+                    if ref.x == 0 and rawLoc.y in [moveDir, 2*moveDir]:
                         return poss
                     # En passant?
                     if self.capture:
-                        if ref.x == 1 and rawLoc.y in [colour, 2*colour]:
+                        if ref.x == 1 and rawLoc.y in [moveDir, 2*moveDir]:
                             self.captureLocation = positions[poss] + Vector2(1,1)
                             return poss
                 else:
                     if self.capture:
-                        if rawLoc.y == colour and ref.x == 1:
+                        if rawLoc.y == moveDir and ref.x == 1:
                             return poss
-                    if ref.x == 0 and rawLoc.y == colour:
+                    if ref.x == 0 and rawLoc.y == moveDir:
                         return poss
 
-    printerr(piece, " ", get_colour(), " ", label, " ", pos, " ", to_grid(pos))
-    printerr(positions)
     null.get_node("Crash")
     return "Not found"
 
 func to_grid(pos: String) -> Vector2:
+    # Turn algebraic notation into gridPos 
     return Vector2(LET[pos[0]], int(pos[1]))
 
 func from_grid(pos: Vector2) -> String:
+    # Turn gridPos into algebraic notation
     return NUM[int(pos.x)] + str(pos.y)
 
 func move(piece, newLoc):
+    # Simulate moving a piece between plies for parsing algebraic notation
     if self.promote:
         self.positions.erase(piece)
         piece = self.get_colour()[0] + self.promote + char(65+self.promotions)
