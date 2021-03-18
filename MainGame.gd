@@ -3,7 +3,7 @@ extends Node
 var currTurn = 0
 signal turn_updated(turn, game)
 signal new_turn(game, turn)
-signal branch(game)
+signal new_game(game)
 var games := []
 var currGameIndex = 0
 var currGame : Game
@@ -16,16 +16,22 @@ func _input(event: InputEvent) -> void:
         self.prev_turn()
         
 func next_turn():
+    if not self.currGame:
+        return
     self.currTurn = clamp(self.currTurn+1, 0, currGame.nTurns()-1)
     load_turn(currTurn)       
 
 func prev_turn():
+    if not self.currGame:
+        return
     self.currTurn = clamp(self.currTurn-1, 0, currGame.nTurns()-1)
     load_turn(currTurn)
     
 func load_turn(turn: int, loadGame: int = -1):
     if loadGame < 0:
         loadGame = currGameIndex
+    if len(games) < loadGame-1:
+        return
     self.currGame = games[loadGame]
     self.currGameIndex = loadGame
     self.currTurn = turn
@@ -43,9 +49,7 @@ func _on_Board_piece_moved(turn) -> void:
     var branching = currTurn < currGame.nTurns()-1
     if branching:
         var newBranch = branch(currGame, currTurn)
-        self.games.push_back(newBranch)
-        emit_signal("branch", newBranch)
-        load_turn(self.currTurn, len(games)-1)
+        new_game(newBranch)
 
     self.currGame.turns.push_back(turn)
     emit_signal("new_turn", self.currGameIndex, turn)
@@ -54,14 +58,16 @@ func _on_Board_piece_moved(turn) -> void:
         load_turn(self.currTurn, len(games)-1)
     emit_signal("turn_updated", self.currTurn, self.currGameIndex)
 
-func _on_FileParser_read(game) -> void:
+func new_game(game: Game):
     self.games.push_back(game)
-
+    emit_signal("new_game", game)
+    load_turn(self.currTurn, len(games)-1)
+    
 func branch(toCopy: Game = null, turn: int = -1) -> Game:
     if not toCopy:
         toCopy = self.currGame
-    if turn < 0:
-        turn = self.currTurn
+        if turn < 0:
+            turn = self.currTurn
 
     var copy = Game.new()    
     copy.data = toCopy.data

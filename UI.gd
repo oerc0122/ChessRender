@@ -6,15 +6,12 @@ onready var UI := $UIPanel/VBoxContainer
 onready var tabs := UI.get_node("TurnsTabber")
 onready var filePath := UI.get_node("FileControl/Path")
 onready var details := UI.get_node("GameDetails")
-var lastTurn = 0
-var lastGame = 0
-var TurnsTab = preload("res://TurnHolder.tscn")
 
-func _ready():
-    var file = File.new()
-    file.open("res://tmp.pgn", File.WRITE)
-    file.close()
-    load_file("res://tmp.pgn", true)
+signal panic_game(game)
+
+var lastTurn = -1
+var lastGame = -1
+var TurnsTab = preload("res://TurnHolder.tscn")
 
 func set_headers():
     var currGame = game.currGame
@@ -40,6 +37,11 @@ func new_game(newGame: Game):
     tabs.set_current_tab(idx)
 
 func new_turn(game: int, turn: Turn):
+    if game >= tabs.get_tab_count():
+        var tmpGame = Game.new()
+        tmpGame.turns = [turn]
+        emit_signal("panic_game", tmpGame)
+        return
     var turnsList = tabs.get_tab_control(game).get_node("TurnsList")
     var i = turnsList.get_child_count()
     var button = Button.new()
@@ -49,9 +51,10 @@ func new_turn(game: int, turn: Turn):
     turnsList.add_child(button)
 
 func update_turn(newTurn, newGame):
-    var turnsList = tabs.get_tab_control(self.lastGame).get_node("TurnsList")
-    turnsList.get_child(lastTurn).disabled = false
-    turnsList = tabs.get_tab_control(newGame).get_node("TurnsList")
+    if lastGame >= 0 or lastTurn >= 0:
+        var turnsList = tabs.get_tab_control(self.lastGame).get_node("TurnsList")
+        turnsList.get_child(lastTurn).disabled = false
+    var turnsList = tabs.get_tab_control(newGame).get_node("TurnsList")
     turnsList.get_child(newTurn).disabled = true
     turnsList.get_child(newTurn).grab_focus()
     self.lastTurn = newTurn
@@ -75,10 +78,10 @@ func _on_Load_pressed() -> void:
     else:
         _error("File not found", "File: "+path+" not found")
 
-func _on_SaveGame_pressed() -> void:
+func save_game(path: String) -> void:
     _error("Not implemented", "Saving of games not currently implemented")
 
-func _on_CloseGame_pressed() -> void:
+func close_game() -> void:
     var idx = tabs.get_current_tab()
     
     # Delete from stored games
@@ -93,10 +96,6 @@ func _on_CloseGame_pressed() -> void:
     # Recreate tabs
     for currGame in game.games:
         self.new_game(currGame)
-
-    if game.games.empty(): # Always have game
-        load_file("res://tmp.pgn", true)    
-        game.load_turn(0,0)
         
 func _error(title: String, message: String):
     get_tree().get_root().get_node("Root").error(title, message)
