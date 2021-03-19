@@ -15,11 +15,11 @@ __meta__ = {
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 1017.0
-margin_bottom = 439.0
+margin_bottom = 27.0
 
 [node name="MenuButton" type="MenuButton" parent="HBoxContainer"]
 margin_right = 35.0
-margin_bottom = 432.0
+margin_bottom = 20.0
 text = "File"
 items = [ "New Game...", null, 0, false, false, 0, 0, null, "", false, "Load Game...", null, 0, false, false, 1, 0, null, "", false, "Save Game...", null, 0, false, false, 2, 0, null, "", false, "Quit", null, 0, false, false, 3, 0, null, "", false ]
 switch_on_hover = true
@@ -27,7 +27,7 @@ switch_on_hover = true
 [node name="GameButton" type="MenuButton" parent="HBoxContainer"]
 margin_left = 39.0
 margin_right = 89.0
-margin_bottom = 432.0
+margin_bottom = 20.0
 text = "Game"
 items = [ "Previous Turn", null, 0, false, false, 0, 0, null, "", false, "Next Turn", null, 0, false, false, 1, 0, null, "", false, "Edit Game Details", null, 0, false, false, 2, 0, null, "", false, "Close Game", null, 0, false, false, 3, 0, null, "", false ]
 switch_on_hover = true
@@ -35,7 +35,7 @@ switch_on_hover = true
 [node name="NetworkButton" type="MenuButton" parent="HBoxContainer"]
 margin_left = 93.0
 margin_right = 158.0
-margin_bottom = 432.0
+margin_bottom = 20.0
 text = "Network"
 items = [ "Connect to...", null, 0, false, false, 1, 0, null, "", false, "Disconnect", null, 0, false, false, 2, 0, null, "", false, "Host", null, 0, false, false, 0, 0, null, "", false ]
 switch_on_hover = true
@@ -51,22 +51,24 @@ margin_left = 7.0
 margin_top = 7.0
 margin_right = 207.0
 margin_bottom = 131.0
+rect_min_size = Vector2( 400, 140 )
 window_title = "Establish Connection..."
 
 [node name="CenterContainer" type="CenterContainer" parent="Network"]
 margin_left = 8.0
 margin_top = 8.0
-margin_right = 192.0
-margin_bottom = 88.0
+margin_right = 392.0
+margin_bottom = 104.0
 size_flags_horizontal = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Network/CenterContainer"]
-margin_left = 25.0
-margin_right = 159.0
-margin_bottom = 80.0
+margin_left = 125.0
+margin_top = 8.0
+margin_right = 259.0
+margin_bottom = 88.0
 size_flags_horizontal = 3
 
 [node name="IPBlock" type="HBoxContainer" parent="Network/CenterContainer/VBoxContainer"]
@@ -143,7 +145,6 @@ __meta__ = {
 }
 
 [node name="GameDetailPopup" type="AcceptDialog" parent="."]
-visible = true
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 1017.0

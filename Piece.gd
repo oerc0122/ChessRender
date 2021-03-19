@@ -2,7 +2,7 @@ extends Sprite
 class_name Piece
 enum TYPES {KING, QUEEN, BISHOP, KNIGHT, ROOK, PAWN}
 enum COLOUR {WHITE=0, BLACK=1}
-const PAWN_DIR = [1, -1]
+const PAWN_DIR = [-1, 1]
 const KNIGHT_MOVES = [Vector2(1,2),
                       Vector2(-1,2),
                       Vector2(-1,-2),

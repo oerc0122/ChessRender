@@ -134,10 +134,10 @@ func move_piece(pos:Vector2, newLoc:Vector2):
     emit_signal("piece_moved", turn)
         
 func to_grid(pos: String) -> Vector2:
-    return Vector2(LET[pos[0]], int(pos[1]))
+    return Vector2(LET[pos[0]], 9-int(pos[1]))
 
 func from_grid(pos: Vector2) -> String:
-    return NUM[int(pos.x)] + str(pos.y)
+    return NUM[int(pos.x)] + str(9-pos.y)
 
 func promote(sel : int) -> void:
     self.promoteTo = sel

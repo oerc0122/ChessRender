@@ -2,7 +2,7 @@ extends Resource
 class_name Turn
 
 enum COLOUR {WHITE=0, BLACK=1}
-const PAWN_DIR = [1, -1]
+const PAWN_DIR = [-1, 1]
 const COLOUR_NAMES = {COLOUR.WHITE:"White", COLOUR.BLACK:"Black"}
 const LET = {"a":1, "b":2, "c":3, "d":4, "e":5, "f":6, "g":7, "h":8}
 const NUM = {1:"a", 2:"b", 3:"c", 4:"d", 5:"e", 6:"f", 7:"g", 8:"h"}
@@ -14,10 +14,10 @@ const KNIGHT_MOVES = [Vector2(1,2),
                       Vector2(-2,1),
                       Vector2(-2,-1),
                       Vector2(2,-1)]
-const STARTING_BOARD_STATE = {"WR1":Vector2(1,1),"WN1":Vector2(2,1),"WB1":Vector2(3,1),"WQ1":Vector2(4,1),"WK1":Vector2(5,1),"WB2":Vector2(6,1),"WN2":Vector2(7,1),"WR2":Vector2(8,1),
-                              "WP1":Vector2(1,2),"WP2":Vector2(2,2),"WP3":Vector2(3,2),"WP4":Vector2(4,2),"WP5":Vector2(5,2),"WP6":Vector2(6,2),"WP7":Vector2(7,2),"WP8":Vector2(8,2),
-                              "BR1":Vector2(1,8),"BN1":Vector2(2,8),"BB1":Vector2(3,8),"BQ1":Vector2(4,8),"BK1":Vector2(5,8),"BB2":Vector2(6,8),"BN2":Vector2(7,8),"BR2":Vector2(8,8),
-                              "BP1":Vector2(1,7),"BP2":Vector2(2,7),"BP3":Vector2(3,7),"BP4":Vector2(4,7),"BP5":Vector2(5,7),"BP6":Vector2(6,7),"BP7":Vector2(7,7),"BP8":Vector2(8,7)}
+const STARTING_BOARD_STATE = {"WR1":Vector2(1,8),"WN1":Vector2(2,8),"WB1":Vector2(3,8),"WQ1":Vector2(4,8),"WK1":Vector2(5,8),"WB2":Vector2(6,8),"WN2":Vector2(7,8),"WR2":Vector2(8,8),
+                              "WP1":Vector2(1,7),"WP2":Vector2(2,7),"WP3":Vector2(3,7),"WP4":Vector2(4,7),"WP5":Vector2(5,7),"WP6":Vector2(6,7),"WP7":Vector2(7,7),"WP8":Vector2(8,7),
+                              "BR1":Vector2(1,1),"BN1":Vector2(2,1),"BB1":Vector2(3,1),"BQ1":Vector2(4,1),"BK1":Vector2(5,1),"BB2":Vector2(6,1),"BN2":Vector2(7,1),"BR2":Vector2(8,1),
+                              "BP1":Vector2(1,2),"BP2":Vector2(2,2),"BP3":Vector2(3,2),"BP4":Vector2(4,2),"BP5":Vector2(5,2),"BP6":Vector2(6,2),"BP7":Vector2(7,2),"BP8":Vector2(8,2)}
 
 
 var raw : String
@@ -119,8 +119,8 @@ func which_piece(colour, label, disamb, pos) -> String:
                     return poss
             "P":
                 var moveDir = self.PAWN_DIR[colour]
-                if ((colour == COLOUR.WHITE and positions[poss].y == 2) or # Initial move of two
-                    (colour == COLOUR.BLACK and positions[poss].y == 7)):
+                if ((colour == COLOUR.WHITE and positions[poss].y == 7) or # Initial move of two
+                    (colour == COLOUR.BLACK and positions[poss].y == 2)):
                     if ref.x == 0 and rawLoc.y in [moveDir, 2*moveDir]:
                         return poss
                     # En passant?
@@ -140,11 +140,11 @@ func which_piece(colour, label, disamb, pos) -> String:
 
 func to_grid(pos: String) -> Vector2:
     # Turn algebraic notation into gridPos 
-    return Vector2(LET[pos[0]], int(pos[1]))
+    return Vector2(LET[pos[0]], 9-int(pos[1]))
 
 func from_grid(pos: Vector2) -> String:
     # Turn gridPos into algebraic notation
-    return NUM[int(pos.x)] + str(pos.y)
+    return NUM[int(pos.x)] + str(9-pos.y)
 
 func move(piece, newLoc):
     # Simulate moving a piece between plies for parsing algebraic notation
