@@ -36,18 +36,18 @@ func new_game(newGame: Game):
         new_turn(idx, turn)
     tabs.set_current_tab(idx)
 
-func new_turn(game: int, turn: Turn):
-    if game >= tabs.get_tab_count():
+func new_turn(newGame: int, turn: Turn):
+    if newGame >= tabs.get_tab_count():
         var tmpGame = Game.new()
         tmpGame.turns = [turn]
-        emit_signal("panic_game", tmpGame)
+        emit_signal("panic_newGame", tmpGame)
         return
-    var turnsList = tabs.get_tab_control(game).get_node("TurnsList")
+    var turnsList = tabs.get_tab_control(newGame).get_node("TurnsList")
     var i = turnsList.get_child_count()
     var button = Button.new()
     button.text = turn.ID
     button.name = "Button"+str(i)
-    button.connect('pressed', self, 'set_turn', [i, game])
+    button.connect('pressed', self, 'set_turn', [i, newGame])
     turnsList.add_child(button)
 
 func update_turn(newTurn, newGame):

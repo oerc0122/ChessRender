@@ -66,6 +66,38 @@ margin_bottom = 568.0
 size_flags_horizontal = 1
 
 [node name="FileParser" parent="." instance=ExtResource( 5 )]
+
+[node name="GamesDialog" type="AcceptDialog" parent="."]
+visible = true
+margin_right = 150.0
+margin_bottom = 65.0
+rect_min_size = Vector2( 150, 150 )
+size_flags_vertical = 8
+window_title = "Select Games"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ScrollContainer" type="ScrollContainer" parent="GamesDialog"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 8.0
+margin_top = 8.0
+margin_right = -8.0
+margin_bottom = -36.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+follow_focus = true
+scroll_horizontal_enabled = false
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GamesDialog/ScrollContainer"]
+margin_right = 134.0
+margin_bottom = 106.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 [connection signal="close_game" from="VBoxContainer/TopMenu" to="VBoxContainer/HBoxContainer/UIPanel" method="close_game"]
 [connection signal="load_game" from="VBoxContainer/TopMenu" to="." method="_on_TopMenu_load_game"]
 [connection signal="new_game" from="VBoxContainer/TopMenu" to="." method="_on_TopMenu_new_game"]

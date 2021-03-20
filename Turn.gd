@@ -35,6 +35,9 @@ var check : int = 0
 var promote : String
 var promotions : int = 0
 
+class DummyBoard:
+    var positions: Dictionary = {}
+
 func _init(colour: int = COLOUR.BLACK, boardState: Dictionary = STARTING_BOARD_STATE, turn: RegExMatch = null, nPromotions: int = 0, commentOverride = null):
     self.player = colour
     self.positions = boardState.duplicate()
@@ -49,6 +52,7 @@ func _init(colour: int = COLOUR.BLACK, boardState: Dictionary = STARTING_BOARD_S
             self.castling(castle.count("O")==2)
             self.ID = self.get_colour() + " : " + castle
         else:
+            self.promote = turn.get_string(self.get_colour()+"Promotion")
             self.piece = self.which_piece(colour, turn.get_string(self.get_colour()+"Piece"),
                                                 turn.get_string(self.get_colour()+"Disambiguation"),
                                                 turn.get_string(self.get_colour()+"Location"))
@@ -87,53 +91,32 @@ func which_piece(colour, label, disamb, pos) -> String:
     if len(possibles) == 0:
         printerr("No possible piece found")
         null.get_node("Crash")
-    elif len(possibles) == 1:
-        return possibles[0]
 
+    var tmp_poss = possibles.duplicate()
     if disamb: # Have disambiguation
-        for poss in possibles:
-            if disamb in self.from_grid(positions[poss]):
-                return poss
+        for poss in tmp_poss:
+            if not disamb in self.from_grid(self.positions[poss]):
+                possibles.erase(poss)
+    tmp_poss.clear()
 
     # Ambiguous: need to do this manually
     var grid_pos = to_grid(pos)
 
+    var board = DummyBoard.new()
+    for pos in positions.values():
+        board.positions[pos] = 1
+    
     for poss in possibles:
-        var rawLoc = (grid_pos - positions[poss]) # Raw useful for checking pawns moving in right dir.
-        var ref = rawLoc.abs()
-        match label:
-            "Q":
-                if ref.x == 0 or ref.y == 0 or ref.x == ref.y:
-                    return poss
-            "K":
-                if ref.length_squared < 2:
-                    return poss
-            "N":
-                if ref in KNIGHT_MOVES:
-                    return poss
-            "R":
-                if ref.x == 0 or ref.y == 0:
-                    return poss
-            "B":
-                if ref.x == ref.y:
-                    return poss
-            "P":
-                var moveDir = self.PAWN_DIR[colour]
-                if ((colour == COLOUR.WHITE and positions[poss].y == 7) or # Initial move of two
-                    (colour == COLOUR.BLACK and positions[poss].y == 2)):
-                    if ref.x == 0 and rawLoc.y in [moveDir, 2*moveDir]:
-                        return poss
-                    # En passant?
-                    if self.capture:
-                        if ref.x == 1 and rawLoc.y in [moveDir, 2*moveDir]:
-                            self.captureLocation = positions[poss] + Vector2(1,1)
-                            return poss
-                else:
-                    if self.capture:
-                        if rawLoc.y == moveDir and ref.x == 1:
-                            return poss
-                    if ref.x == 0 and rawLoc.y == moveDir:
-                        return poss
+        var trial_piece = Piece.new()
+        trial_piece.init_from_name(poss, positions[poss])
+        # Only care if pawns have moved
+        if trial_piece.type == Piece.TYPES.PAWN:
+            trial_piece.moved = ((trial_piece.colour == COLOUR.WHITE and trial_piece.gridPos.y != 7) or
+                                (trial_piece.colour == COLOUR.BLACK and trial_piece.gridPos.y != 2))
+            if self.capture and not grid_pos in board.positions: # En passant
+                self.captureLocation = trial_piece.gridPos + Vector2.RIGHT*(grid_pos.x - trial_piece.gridPos.x)
+        if trial_piece.can_move(grid_pos, self.capture, board):
+            return poss
 
     null.get_node("Crash")
     return "Not found"
@@ -148,17 +131,18 @@ func from_grid(pos: Vector2) -> String:
 
 func move(piece, newLoc):
     # Simulate moving a piece between plies for parsing algebraic notation
+    print(promote)
     if self.promote:
         self.positions.erase(piece)
         piece = self.get_colour()[0] + self.promote + char(65+self.promotions)
         self.promotions += 1
 
     if self.capture:
-        if self.captureLocation != null:
-            newLoc = self.captureLocation    
+        if self.captureLocation == null:
+            self.captureLocation = to_grid(newLoc)
         
         for capturedPiece in self.positions:
-            if self.positions[capturedPiece] == self.to_grid(newLoc):
+            if self.positions[capturedPiece] == self.captureLocation:
                 self.positions.erase(capturedPiece)
 
     self.positions[piece] = self.to_grid(newLoc)
@@ -174,10 +158,10 @@ func castling(kingside: bool):
     else:
         if self.player == COLOUR.WHITE:
             self.move("WK1", "c1")
-            self.move("WR2", "d1")
+            self.move("WR1", "d1")
         else:
             self.move("BK1", "c8")
-            self.move("BR2", "d8")
+            self.move("BR1", "d8")
             
 func get_ID() -> String:
     return "{turn}:{piece}{from} -> {to}".format({'turn':self.get_colour(), 

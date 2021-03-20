@@ -1,5 +1,5 @@
 extends TileMap
-
+class_name Board
 onready var PIECE = preload("res://Piece.tscn")
 onready var game = get_parent()
 
@@ -94,7 +94,7 @@ func move_piece(pos:Vector2, newLoc:Vector2):
             emit_signal("error","Cannot move piece", "Tile occupied")
             return
 
-    if not moving.can_move(newLoc, turn.capture):
+    if not moving.can_move(newLoc, turn.capture, self):
         emit_signal("error","Cannot move piece", "Piece cannot move there")
         return
 
@@ -150,4 +150,3 @@ func to_pos() -> Dictionary:
         if child is Piece:
             dictOut[child.ID] = child.gridPos
     return dictOut
-

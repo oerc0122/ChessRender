@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "TileMap",
+"class": "Board",
+"language": "GDScript",
+"path": "res://Board.gd"
+}, {
 "base": "Node",
 "class": "FileParser",
 "language": "GDScript",
@@ -30,6 +35,7 @@ _global_script_classes=[ {
 "path": "res://Turn.gd"
 } ]
 _global_script_class_icons={
+"Board": "",
 "FileParser": "",
 "Game": "",
 "Piece": "",

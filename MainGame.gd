@@ -61,7 +61,7 @@ func _on_Board_piece_moved(turn) -> void:
 func new_game(game: Game):
     self.games.push_back(game)
     emit_signal("new_game", game)
-    load_turn(self.currTurn, len(games)-1)
+    load_turn(0, len(games)-1)
     
 func branch(toCopy: Game = null, turn: int = -1) -> Game:
     if not toCopy:
