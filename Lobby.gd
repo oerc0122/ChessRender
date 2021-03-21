@@ -1,6 +1,9 @@
 extends Node
 
 signal sync_games(id)
+signal server_connected(serverIP, port)
+signal server_started(port)
+signal server_disconnected()
 
 const PLAYERS = 2
 const HOST_ID = 1
@@ -14,7 +17,6 @@ func _ready() -> void:
     get_tree().connect("network_peer_disconnected", self, "_close_connection")
     get_tree().connect("connection_failed", self, "_connection_failed")
     get_tree().connect("server_disconnected", self, "_server_disconnected")
-    self._close_connection()
 
 func host(port: int, pwIn: String):
     _close_connection() # In case of restart
@@ -23,6 +25,8 @@ func host(port: int, pwIn: String):
     get_tree().set_network_peer(peer)
     my_id = HOST_ID
     self.pw = pwIn
+    Globals.online = true
+    emit_signal("server_started", port, self.pw)
 
 func client(ip: String, port: int, pwIn: String):
     _close_connection() # In case of restart
@@ -33,18 +37,20 @@ func client(ip: String, port: int, pwIn: String):
     var peer = NetworkedMultiplayerENet.new()
     peer.create_client(self.targetIP, self.targetPort)
     get_tree().set_network_peer(peer)
+    emit_signal("server_connected", self.targetIP, self.targetPort)
+    Globals.online = true
 
 func _check_pw(id, pwIn):
     if pwIn != pw:
         rpc_id(id, "error", "Cannot join", "Passwords don't match")
-    get_tree().network_peer.disconnect_peer(id)
+        rpc_id(id, "_close_connection")
+        get_tree().network_peer.disconnect_peer(id)
 
 remote func _close_connection():
     if get_tree().network_peer:
         get_tree().network_peer.close_connection()
-    var peer = NetworkedMultiplayerENet.new()
-    peer.create_server(10000, 1)
-    get_tree().set_network_peer(peer)
+    Globals.online = false
+    emit_signal("server_disconnected")
 
 func _player_connected(id: int):
     emit_signal("sync_games", id)

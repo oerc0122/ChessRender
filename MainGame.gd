@@ -31,7 +31,10 @@ func prev_turn():
     load_turn(currTurn)
     
 func load_turn(turn: int, loadGame: int = -1):
-    rpc("_load_turn", turn, loadGame)
+    if Globals.online:
+        rpc("_load_turn", turn, loadGame)
+    else:
+        _load_turn(turn, loadGame)
 
 remotesync func _load_turn(turn: int, loadGame: int = -1):
     if loadGame < 0:
@@ -53,6 +56,7 @@ remotesync func _load_turn(turn: int, loadGame: int = -1):
 func _on_Board_piece_moved(turn) -> void:
     self.currPlayer = 1 - self.currPlayer
     var branching = currTurn < currGame.nTurns()-1
+    print(branching)
     if branching:
         var newBranch = branch(currGame, currTurn)
         new_game(newBranch)
@@ -66,6 +70,8 @@ func _on_Board_piece_moved(turn) -> void:
 
 func new_game(game: Game):
     self.games.push_back(game)
+    if Globals.online:
+        sync_games()
     emit_signal("new_game", game)
     load_turn(0, len(games)-1)
     
@@ -78,14 +84,14 @@ func branch(toCopy: Game = null, turn: int = -1) -> Game:
     var copy = Game.new()    
     copy.data = toCopy.data
     copy.turns = toCopy.turns.slice(0, turn)
-    var basename = toCopy.path.split(':')[0]
+    var basename = toCopy.data.get("DisplayName").split(':')[0]
     var num = 0
     for game in self.games:
-        var split = game.path.split(':')
+        var split = game.data.get("DisplayName").split(':')
         if split[0] == basename and len(split) > 1:
             num = max(num, split[1].to_int())
     
-    copy.path = basename + ":" + str(num+1)
+    copy.data["DisplayName"] = basename + ":" + str(num+1)
     return copy
 
 master func sync_games(id: int = 0):
@@ -99,11 +105,12 @@ master func sync_games(id: int = 0):
         else:
             rpc_id(id, "set_games", encode, self.currGameIndex, self.currTurn)
 
-remote func set_games(gameBytes: String, gameIdx: int, turn: int):
+puppet func set_games(gameBytes: String, gameIdx: int, turn: int):
     var FP = FileParser.new()
     self.games = FP.parse_matches(gameBytes)
     emit_signal("reload_games")
-    load_turn(turn, gameIdx)
+    if self.games:
+        load_turn(turn, gameIdx)
 
 func _error(title, message):
     get_tree().get_root().get_node("Root").error(title, message) 

@@ -7,7 +7,7 @@ var turns := [Turn.new()]
 func _to_string() -> String:
     var string = ""
     for elem in data:
-        string += '["{elem}" "{data}"]\n'.format({"elem":elem, "data":data[elem]})
+        string += '[{elem} "{data}"]\n'.format({"elem":elem, "data":data[elem]})
     string += "\n"
     var capture: String
     var promote: String

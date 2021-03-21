@@ -105,7 +105,7 @@ func parse_SAN(SAN: String) -> Game:
         else:
             parsed_turns.push_back(currTurn)
 
-    if not has_turn(turns[-1], "Black"): # Catch leftover
+    if len(turns)>0 and not has_turn(turns[-1], "Black"): # Catch leftover
         parsed_turns.push_back(turns[-1])
     turns.clear() # Clean up
 

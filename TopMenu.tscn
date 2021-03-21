@@ -40,6 +40,22 @@ text = "Network"
 items = [ "Connect to...", null, 0, false, false, 1, 0, null, "", false, "Disconnect", null, 0, false, false, 2, 0, null, "", false, "Host", null, 0, false, false, 0, 0, null, "", false ]
 switch_on_hover = true
 
+[node name="VSeparator" type="VSeparator" parent="HBoxContainer"]
+margin_left = 162.0
+margin_right = 166.0
+margin_bottom = 140.0
+
+[node name="ConnectionStatus" type="Label" parent="HBoxContainer"]
+margin_left = 170.0
+margin_top = 63.0
+margin_right = 213.0
+margin_bottom = 77.0
+text = "Offline"
+align = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="FileDialog" type="FileDialog" parent="."]
 margin_right = 416.0
 margin_bottom = 184.0
@@ -47,6 +63,7 @@ rect_min_size = Vector2( 400, 140 )
 filters = PoolStringArray( "*.pgn" )
 
 [node name="Network" type="ConfirmationDialog" parent="."]
+visible = true
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 1017.0
@@ -144,7 +161,6 @@ __meta__ = {
 margin_left = 188.0
 margin_right = 246.0
 margin_bottom = 24.0
-secret = true
 __meta__ = {
 "_edit_use_anchors_": false
 }

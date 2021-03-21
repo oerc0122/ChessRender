@@ -6,6 +6,7 @@
 
 [node name="Piece" type="Sprite"]
 scale = Vector2( 0.3, 0.3 )
+z_index = 3
 texture = ExtResource( 1 )
 vframes = 2
 hframes = 6

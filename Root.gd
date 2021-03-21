@@ -3,7 +3,7 @@ extends Node
 onready var UIMain = $VBoxContainer/HBoxContainer/UIPanel
 onready var MainGame = $VBoxContainer/HBoxContainer/ViewportContainer/MainGame
 onready var GamesList = $GamesDialog/ScrollContainer/VBoxContainer    
-
+onready var ConnectionStatus = $VBoxContainer/TopMenu/HBoxContainer/ConnectionStatus
 func new_game(game: Game):
     MainGame.new_game(game)
 
@@ -41,3 +41,16 @@ func add_button(game: Game):
     button.text = "%s v. %s" % [game.data.get("White", "Unknown"), game.data.get("Black", "Unknown")]
     GamesList.add_child(button)
     GamesList.move_child(button, GamesList.get_child_count()-1)
+
+
+func _on_Lobby_server_connected(serverIP, port) -> void:
+    ConnectionStatus.text = "Connected to %s:%d" % [serverIP, port]
+
+func _on_Lobby_server_disconnected() -> void:
+    ConnectionStatus.text = "Offline"
+
+func _on_Lobby_server_started(port, pw) -> void:
+    ConnectionStatus.text = "Hosting on port %d" % port
+    if pw:
+         ConnectionStatus.text += " -- Password: %s" % pw
+    

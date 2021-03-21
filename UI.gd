@@ -62,8 +62,8 @@ func close_game() -> void:
     
     # Delete from stored games
     game.games.remove(idx)
-    self.lastGame = 0
-    self.lastTurn = 0    
+    self.lastGame = -1
+    self.lastTurn = -1   
 
     reload_games()
 

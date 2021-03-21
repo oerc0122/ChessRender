@@ -21,7 +21,6 @@ func add_piece(colour, type, pos, has_moved:bool = false):
         null.get_node("Crash")
 
     var piece = PIECE.instance()
-    add_child(piece)
     piece.init(colour, type)
     
     # Find used names
@@ -39,7 +38,7 @@ func add_piece(colour, type, pos, has_moved:bool = false):
         i += 1
         trial_name = piece.get_ID()+str(i)
     piece.ID = trial_name
-    
+    add_child(piece)
     update_piece(piece, pos)
     piece.moved = has_moved
     

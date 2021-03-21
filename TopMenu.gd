@@ -22,6 +22,7 @@ signal close_game
 
 signal host(port, pw)
 signal connect(ip, port, pw)
+signal disconnect()
 
 var file_loc: String
 
@@ -102,7 +103,7 @@ func _on_NetworkMenu_id_pressed(id: int) -> void:
             self.port = ""
             self.pw = ""
         NETWORK.DISCONNECT:
-            get_tree().network_peer = null
+            emit_signal("disconnect")
 
 func _on_FileDialog_file_selected(path: String) -> void:
     self.file_loc = path
