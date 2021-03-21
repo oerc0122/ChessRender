@@ -24,7 +24,10 @@ var ID : String
 
 func _process(delta: float) -> void:
     if $Draggable.dragging:
-        self.position = get_global_mouse_position()
+        rpc_unreliable("set_pos", get_global_mouse_position())
+
+remotesync func set_pos(newPos: Vector2):
+    self.position = newPos
 
 func init(colour: int, type: int) -> void:
     self.colour = colour
@@ -85,8 +88,8 @@ func can_move(newLoc, capture: bool, boardIn) -> bool:
 func _on_Draggable_stopdrag() -> void:
     var mousePos = get_global_mouse_position()
     var newPos = board.world_to_map(mousePos)
-    board.move_piece(self.gridPos, newPos)
-    move_to_pos()
+    board.rpc("move_piece", self.gridPos, newPos)
+    rpc("move_to_pos")
 
 func move_to_pos():
     self.position = board.map_to_world(self.gridPos) + board.TILE_OFFSET

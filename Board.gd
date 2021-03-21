@@ -21,6 +21,7 @@ func add_piece(colour, type, pos, has_moved:bool = false):
         null.get_node("Crash")
 
     var piece = PIECE.instance()
+    add_child(piece)
     piece.init(colour, type)
     
     # Find used names
@@ -39,7 +40,6 @@ func add_piece(colour, type, pos, has_moved:bool = false):
         trial_name = piece.get_ID()+str(i)
     piece.ID = trial_name
     
-    add_child(piece)
     update_piece(piece, pos)
     piece.moved = has_moved
     
@@ -61,7 +61,7 @@ func update_piece(piece, location: Vector2):
     self.positions[piece.gridPos] = piece
     piece.move_to_pos()
 
-func move_piece(pos:Vector2, newLoc:Vector2):
+remotesync func move_piece(pos:Vector2, newLoc:Vector2):
     if not pos in self.positions:
         emit_signal("error","Cannot move piece", "No piece in position")
         return

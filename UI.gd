@@ -1,10 +1,8 @@
 extends Control
 
 onready var game := get_parent().get_node("ViewportContainer/MainGame")
-onready var parser := game.get_node("FileParser")
 onready var UI := $UIPanel/VBoxContainer
 onready var tabs := UI.get_node("TurnsTabber")
-onready var filePath := UI.get_node("FileControl/Path")
 onready var details := UI.get_node("GameDetails")
 
 signal panic_game(game)
@@ -15,23 +13,17 @@ var TurnsTab = preload("res://TurnHolder.tscn")
 
 func set_headers():
     var currGame = game.currGame
-    details.text = currGame.path+"\n"
+    details.text = currGame.data.get("DisplayName", "New Game")+"\n"
     for data in currGame.data:
+        if data == "DisplayName":
+            continue
         details.text += data+" : "+currGame.data[data]+"\n"
-
-func load_file(path: String, init: bool = false):
-    var newGame = parser.read(path)
-    if init:
-        newGame.path = "New Game"
-    new_game(newGame)
-    var idx = tabs.get_tab_count()-1
-    set_turn(0, idx)
 
 func new_game(newGame: Game):
     var turnsTab = TurnsTab.instance()
     tabs.add_child(turnsTab)
     var idx = tabs.get_tab_count()-1
-    tabs.set_tab_title(idx, newGame.path)
+    tabs.set_tab_title(idx, newGame.data.get("DisplayName", "New Game"))
     for turn in newGame.turns:
         new_turn(idx, turn)
     tabs.set_current_tab(idx)
@@ -65,22 +57,6 @@ func update_turn(newTurn, newGame):
 func set_turn(turn: int, idx: int = -1):
     self.game.load_turn(turn, idx)
 
-func _on_Search_pressed() -> void:
-    $FileDialog.popup_centered()
-
-func _on_FileDialog_file_selected(path: String) -> void:
-    filePath.text = path
-
-func _on_Load_pressed() -> void:
-    var path: String = filePath.text
-    if File.new().file_exists(path):
-        load_file(path)
-    else:
-        _error("File not found", "File: "+path+" not found")
-
-func save_game(path: String) -> void:
-    _error("Not implemented", "Saving of games not currently implemented")
-
 func close_game() -> void:
     var idx = tabs.get_current_tab()
     
@@ -89,6 +65,9 @@ func close_game() -> void:
     self.lastGame = 0
     self.lastTurn = 0    
 
+    reload_games()
+
+func reload_games() -> void:
     # Remove old tabs
     for tab in tabs.get_children():
         tab.queue_free()
@@ -105,6 +84,3 @@ func _on_nextTurn_pressed() -> void:
 
 func _on_prevTurn_pressed() -> void:
     self.game.prev_turn()
-
-func _on_QuitButton_pressed() -> void:
-    get_tree().quit()

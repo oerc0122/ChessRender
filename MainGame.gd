@@ -1,13 +1,16 @@
 extends Node
 
-var currTurn = 0
 signal turn_updated(turn, game)
 signal new_turn(game, turn)
 signal new_game(game)
+signal reload_games
+
 var games := []
 var currGameIndex = 0
 var currGame : Game
 var currPlayer = 0
+var currTurn = 0
+var tmp
 
 func _input(event: InputEvent) -> void:
     if event.is_action_pressed('ui_right'):
@@ -28,6 +31,9 @@ func prev_turn():
     load_turn(currTurn)
     
 func load_turn(turn: int, loadGame: int = -1):
+    rpc("_load_turn", turn, loadGame)
+
+remotesync func _load_turn(turn: int, loadGame: int = -1):
     if loadGame < 0:
         loadGame = currGameIndex
     if len(games) < loadGame-1:
@@ -82,5 +88,28 @@ func branch(toCopy: Game = null, turn: int = -1) -> Game:
     copy.path = basename + ":" + str(num+1)
     return copy
 
+master func sync_games(id: int = 0):
+    if get_tree().is_network_server():
+        var encode = ""
+        for game in self.games:
+            encode += game.to_string()+"\n\n"
+
+        if not id:
+            rpc("set_games", encode, self.currGameIndex, self.currTurn)
+        else:
+            rpc_id(id, "set_games", encode, self.currGameIndex, self.currTurn)
+
+remote func set_games(gameBytes: String, gameIdx: int, turn: int):
+    var FP = FileParser.new()
+    self.games = FP.parse_matches(gameBytes)
+    emit_signal("reload_games")
+    load_turn(turn, gameIdx)
+
 func _error(title, message):
     get_tree().get_root().get_node("Root").error(title, message) 
+
+func _on_TopMenu_save_game(file) -> void:
+    var outFile = File.new()
+    outFile.open(file, File.WRITE)
+    outFile.store_string(currGame.to_string())
+    outFile.close()

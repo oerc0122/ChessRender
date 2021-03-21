@@ -2,21 +2,7 @@ extends Node
 
 onready var UIMain = $VBoxContainer/HBoxContainer/UIPanel
 onready var MainGame = $VBoxContainer/HBoxContainer/ViewportContainer/MainGame
-onready var GamesList = $GamesDialog/ScrollContainer/VBoxContainer
-
-
-func host(port: int, players: int):
-    var peer = NetworkedMultiplayerENet.new()
-    peer.create_server(port, players)
-    get_tree().network_peer = peer
-
-func client(ip: int, port: int):
-    var peer = NetworkedMultiplayerENet.new()
-    peer.create_client(ip, port)
-    get_tree().network_peer = peer
-
-func close_connection(id: int = -1):
-    get_tree().network_peer = null
+onready var GamesList = $GamesDialog/ScrollContainer/VBoxContainer    
 
 func new_game(game: Game):
     MainGame.new_game(game)
@@ -46,7 +32,7 @@ func _on_TopMenu_load_game(file) -> void:
 
 func _on_TopMenu_new_game() -> void:
     var game = Game.new()
-    game.path = "New game"
+    game.data["DisplayName"] = "New game"
     new_game(game)
 
 func add_button(game: Game):

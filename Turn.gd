@@ -34,6 +34,7 @@ var captureLocation = null
 var check : int = 0
 var promote : String
 var promotions : int = 0
+var castle: String
 
 class DummyBoard:
     var positions: Dictionary = {}
@@ -47,7 +48,7 @@ func _init(colour: int = COLOUR.BLACK, boardState: Dictionary = STARTING_BOARD_S
         self.turnNo = int(turn.get_string("turn"))
         self.capture = turn.get_string(self.get_colour()+"Capture") != ""
         self.check = "+#".find(turn.get_string(self.get_colour()+"Check")) + 1
-        var castle = turn.get_string(self.get_colour()+"Castle")
+        castle = turn.get_string(self.get_colour()+"Castle")
         if castle:
             self.castling(castle.count("O")==2)
             self.ID = self.get_colour() + " : " + castle
@@ -131,7 +132,6 @@ func from_grid(pos: Vector2) -> String:
 
 func move(piece, newLoc):
     # Simulate moving a piece between plies for parsing algebraic notation
-    print(promote)
     if self.promote:
         self.positions.erase(piece)
         piece = self.get_colour()[0] + self.promote + char(65+self.promotions)
@@ -170,3 +170,41 @@ func get_ID() -> String:
                                                   'to':self.location})
 func get_colour() -> String:
     return COLOUR_NAMES[self.player]
+
+func _to_string() -> String:
+    var string = ""
+    if self.castle:
+        string += self.castle
+    else:
+        var cap = "x" if self.capture else ""
+        var prom = "="+self.promote if self.promote else ""
+        string += "{Piece}{Disamb}{Capture}{MoveTo}{Promote}".format({"Piece":self.piece[1],
+                                                            "Disamb":self.from,
+                                                            "Capture": cap,
+                                                            "MoveTo":self.location,
+                                                            "Promote": prom
+                                                            })
+    if self.comment:
+        string += " {%s}" % self.comment
+    return string
+
+func to_dict() -> Dictionary:
+    return {"raw":self.raw, 
+        "ID":self.ID, 
+        "piece":self.piece, 
+        "from":self.from, 
+        "location":self.location, 
+        "turnNo":self.turnNo, 
+        "player":self.player, 
+        "comment":self.comment, 
+        "positions":self.positions, 
+        "capture":self.capture, 
+        "captureLocation":self.captureLocation,
+        "check":self.check, 
+        "promote":self.promote, 
+        "promotions":self.promotions, 
+        "castle":self.castle}
+        
+func from_dict(dict: Dictionary):
+    for prop in dict:
+        self.set("pop", dict[prop])

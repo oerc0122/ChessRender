@@ -81,21 +81,23 @@ func _on_NetworkMenu_id_pressed(id: int) -> void:
     match id:
         NETWORK.HOST:
             $Network.window_title = "Host game..."
+            $Network/CenterContainer/VBoxContainer/IPBlock.hide()
             $Network.popup_centered()
             yield($Network, "popup_hide")
             yield(get_tree().create_timer(0.1), "timeout")            
             if self.port:
-                emit_signal("host", self.port, self.pw)
+                emit_signal("host", int(self.port), self.pw)
             self.IP = ""
             self.port = ""
             self.pw = ""
         NETWORK.CONNECT:
             $Network.window_title = "Connect to..."
+            $Network/CenterContainer/VBoxContainer/IPBlock.show()
             $Network.popup_centered()
             yield($Network, "popup_hide")
             yield(get_tree().create_timer(0.1), "timeout")
             if self.IP:
-                emit_signal("connect", self.IP, self.port, self.pw)
+                emit_signal("connect", self.IP, int(self.port), self.pw)
             self.IP = ""
             self.port = ""
             self.pw = ""
@@ -109,4 +111,3 @@ func _on_Network_confirmed() -> void:
     self.IP = $Network/CenterContainer/VBoxContainer/IPBlock/IP.text
     self.port = $Network/CenterContainer/VBoxContainer/PortBlock/Port.text
     self.pw = $Network/CenterContainer/VBoxContainer/PasswordBlock/Password.text
-    print("HI",self.IP, self.port, self.pw)

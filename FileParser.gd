@@ -31,6 +31,22 @@ var halfTurnRER = ("(?<turn>[0-9]+)\\.{3}\\s*" +
                     "(?:"+commentRER+")?"
                     )
 
+var rawCommentRE = RegEx.new()
+var suggestionRE = RegEx.new()
+var nagRE = RegEx.new()
+var tagRE = RegEx.new()
+var turnRE = RegEx.new()
+var finalRE = RegEx.new()
+var plyRE = RegEx.new()
+
+func _init():
+    rawCommentRE.compile(rawCommentRER)    
+    suggestionRE.compile(suggestionRER)
+    nagRE.compile(NAGRER)
+    tagRE.compile(tagRER)
+    turnRE.compile("(?:%s|%s)" % [fullTurnRER, halfTurnRER])
+    finalRE.compile(finalRER)
+    plyRE.compile(plyRER)
 
 func read(filepath) -> Array:
     self.path = filepath
@@ -42,22 +58,13 @@ func read(filepath) -> Array:
         return []
     var content := file.get_as_text()
     file.close()
+    var matches = parse_matches(content)
+    for game in matches:
+        if not "DisplayName" in game:
+            game.data["DisplayName"] = filepath.get_file()
+    return matches
 
-    var rawCommentRE = RegEx.new()
-    rawCommentRE.compile(rawCommentRER)    
-    var suggestionRE = RegEx.new()
-    suggestionRE.compile(suggestionRER)
-    var nagRE = RegEx.new()
-    nagRE.compile(NAGRER)
-    var tagRE = RegEx.new()
-    tagRE.compile(tagRER)
-    var turnRE = RegEx.new()
-
-                     
-    turnRE.compile("(?:%s|%s)" % [fullTurnRER, halfTurnRER])
-    var finalRE = RegEx.new()
-    finalRE.compile(finalRER)
-
+func parse_matches(content: String) -> Array:
     content = rawCommentRE.sub(content, "{$comment}", true).replace("\n", " ").strip_escapes()
 #    content = suggestionRE.sub(content, "", true) # For now ignore suggestions, later may want to branch
     content = nagRE.sub(content, "", true) # Remove NAGing
@@ -72,48 +79,60 @@ func read(filepath) -> Array:
     var games = []
     for game in matches:
         game = handle_branches(game)
-        var loaded = Game.new()
-        loaded.path = filepath.get_file()
-        for tag in tagRE.search_all(game):
-            loaded.data[tag.get_string("key")] = tag.get_string("value")
-            game = game.replace(tag.get_string(), "")
-
-        var turns = turnRE.search_all(game)
-        var parsed_turns = []
-        for turn in range(len(turns)): # Stitch half turns
-            var currTurn = turns[turn]
-            if currTurn.get_string("BlackLocation").empty() and currTurn.get_string("BlackCastle").empty():
-                pass # Skip: handled by stitch
-            elif currTurn.get_string("WhiteLocation").empty() and currTurn.get_string("WhiteCastle").empty():
-                var prevTurn = turns[turn-1]
-                var stitch = self.stitch_turns(prevTurn, currTurn)
-                parsed_turns.push_back(turnRE.search(stitch)) 
-            else:
-                parsed_turns.push_back(currTurn)
-        turns.clear() # Clean up
-
-        var currTurn : Turn
-        if not "SetUp" in loaded.data:
-            currTurn = Turn.new()
-            currTurn.raw = "0. Start game"
-        else:
-            if not "FEN" in loaded.data:
-                emit_signal("error", "Bad input pgn", "FEN data not found")
-            currTurn = parse_FEN(loaded.data["FEN"])
-            currTurn.raw = "0. Start game"
-            currTurn.ID = "Start Game"
-
-        loaded.turns = [currTurn]                   
-        
-        for turn in parsed_turns:
-            currTurn = Turn.new(Turn.COLOUR.WHITE, currTurn.positions, turn, currTurn.promotions)
-            loaded.turns.push_back(currTurn)
-            currTurn = Turn.new(Turn.COLOUR.BLACK, currTurn.positions, turn, currTurn.promotions)
-            loaded.turns.push_back(currTurn)
+        var loaded = parse_SAN(game)
         games.push_back(loaded)
-        
+
     emit_signal("read", games)
     return games
+
+func parse_SAN(SAN: String) -> Game:
+    var game = Game.new()
+    
+    for tag in tagRE.search_all(SAN):
+        game.data[tag.get_string("key")] = tag.get_string("value")
+        SAN = SAN.replace(tag.get_string(), "")
+
+    var turns = turnRE.search_all(SAN)
+    var parsed_turns = []
+    for turn in range(len(turns)): # Stitch half turns
+        var currTurn = turns[turn]
+        if not has_turn(currTurn, "Black"):
+            pass # Skip: handled by stitch
+        elif not has_turn(currTurn, "White"):
+            var prevTurn = turns[turn-1]
+            var stitch = self.stitch_turns(prevTurn, currTurn)
+            parsed_turns.push_back(turnRE.search(stitch)) 
+        else:
+            parsed_turns.push_back(currTurn)
+
+    if not has_turn(turns[-1], "Black"): # Catch leftover
+        parsed_turns.push_back(turns[-1])
+    turns.clear() # Clean up
+
+    var currTurn : Turn
+    if not "SetUp" in game.data:
+        currTurn = Turn.new()
+        currTurn.raw = "0. Start game"
+    else:
+        if not "FEN" in game.data:
+            emit_signal("error", "Bad input pgn", "FEN data not found")
+        currTurn = parse_FEN(game.data["FEN"])
+        currTurn.raw = "0. Start game"
+        currTurn.ID = "Start Game"
+
+    game.turns = [currTurn]                   
+    
+    for turn in parsed_turns:
+        currTurn = Turn.new(Turn.COLOUR.WHITE, currTurn.positions, turn, currTurn.promotions)
+        game.turns.push_back(currTurn)
+        if has_turn(turn, "Black"): # Catch leftover
+            currTurn = Turn.new(Turn.COLOUR.BLACK, currTurn.positions, turn, currTurn.promotions)
+            game.turns.push_back(currTurn)    
+    return game
+
+func has_turn(turn: RegExMatch, colour: String):
+    return not (turn.get_string(colour+"Location").empty() and 
+                turn.get_string(colour+"Castle").empty())
 
 func parse_FEN(FEN: String):
     # Parse FEN notation of the form:
@@ -145,8 +164,6 @@ func parse_FEN(FEN: String):
     return turn
 
 func stitch_turns(prevTurn: RegExMatch, currTurn: RegExMatch) -> String:
-    var plyRE = RegEx.new()
-    plyRE.compile(plyRER)
     if prevTurn.get_string("turn") != currTurn.get_string("turn"):
         null.get_node("Crash")
         

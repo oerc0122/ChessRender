@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://MainGame.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Root.gd" type="Script" id=2]
 [ext_resource path="res://UIPanel.tscn" type="PackedScene" id=3]
 [ext_resource path="res://TopMenu.tscn" type="PackedScene" id=4]
 [ext_resource path="res://FileParser.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Lobby.gd" type="Script" id=6]
 
 [node name="Root" type="Node"]
 script = ExtResource( 2 )
@@ -68,7 +69,6 @@ size_flags_horizontal = 1
 [node name="FileParser" parent="." instance=ExtResource( 5 )]
 
 [node name="GamesDialog" type="AcceptDialog" parent="."]
-visible = true
 margin_right = 150.0
 margin_bottom = 65.0
 rect_min_size = Vector2( 150, 150 )
@@ -98,15 +98,22 @@ margin_right = 134.0
 margin_bottom = 106.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
+
+[node name="Lobby" type="Node" parent="."]
+script = ExtResource( 6 )
 [connection signal="close_game" from="VBoxContainer/TopMenu" to="VBoxContainer/HBoxContainer/UIPanel" method="close_game"]
+[connection signal="connect" from="VBoxContainer/TopMenu" to="Lobby" method="client"]
+[connection signal="host" from="VBoxContainer/TopMenu" to="Lobby" method="host"]
 [connection signal="load_game" from="VBoxContainer/TopMenu" to="." method="_on_TopMenu_load_game"]
 [connection signal="new_game" from="VBoxContainer/TopMenu" to="." method="_on_TopMenu_new_game"]
 [connection signal="next_turn" from="VBoxContainer/TopMenu" to="VBoxContainer/HBoxContainer/ViewportContainer/MainGame" method="next_turn"]
 [connection signal="prev_turn" from="VBoxContainer/TopMenu" to="VBoxContainer/HBoxContainer/ViewportContainer/MainGame" method="prev_turn"]
-[connection signal="save_game" from="VBoxContainer/TopMenu" to="VBoxContainer/HBoxContainer/UIPanel" method="save_game"]
+[connection signal="save_game" from="VBoxContainer/TopMenu" to="VBoxContainer/HBoxContainer/ViewportContainer/MainGame" method="_on_TopMenu_save_game"]
 [connection signal="update_headers" from="VBoxContainer/TopMenu" to="VBoxContainer/HBoxContainer/UIPanel" method="set_headers"]
 [connection signal="new_game" from="VBoxContainer/HBoxContainer/ViewportContainer/MainGame" to="VBoxContainer/HBoxContainer/UIPanel" method="new_game"]
 [connection signal="new_turn" from="VBoxContainer/HBoxContainer/ViewportContainer/MainGame" to="VBoxContainer/HBoxContainer/UIPanel" method="new_turn"]
+[connection signal="reload_games" from="VBoxContainer/HBoxContainer/ViewportContainer/MainGame" to="VBoxContainer/HBoxContainer/UIPanel" method="reload_games"]
 [connection signal="turn_updated" from="VBoxContainer/HBoxContainer/ViewportContainer/MainGame" to="VBoxContainer/HBoxContainer/UIPanel" method="update_turn"]
 [connection signal="panic_game" from="VBoxContainer/HBoxContainer/UIPanel" to="." method="new_game"]
 [connection signal="read" from="FileParser" to="." method="_on_FileParser_read"]
+[connection signal="sync_games" from="Lobby" to="VBoxContainer/HBoxContainer/ViewportContainer/MainGame" method="sync_games"]

@@ -15,11 +15,11 @@ __meta__ = {
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 1017.0
-margin_bottom = 27.0
+margin_bottom = 147.0
 
 [node name="MenuButton" type="MenuButton" parent="HBoxContainer"]
 margin_right = 35.0
-margin_bottom = 20.0
+margin_bottom = 140.0
 text = "File"
 items = [ "New Game...", null, 0, false, false, 0, 0, null, "", false, "Load Game...", null, 0, false, false, 1, 0, null, "", false, "Save Game...", null, 0, false, false, 2, 0, null, "", false, "Quit", null, 0, false, false, 3, 0, null, "", false ]
 switch_on_hover = true
@@ -27,7 +27,7 @@ switch_on_hover = true
 [node name="GameButton" type="MenuButton" parent="HBoxContainer"]
 margin_left = 39.0
 margin_right = 89.0
-margin_bottom = 20.0
+margin_bottom = 140.0
 text = "Game"
 items = [ "Previous Turn", null, 0, false, false, 0, 0, null, "", false, "Next Turn", null, 0, false, false, 1, 0, null, "", false, "Edit Game Details", null, 0, false, false, 2, 0, null, "", false, "Close Game", null, 0, false, false, 3, 0, null, "", false ]
 switch_on_hover = true
@@ -35,7 +35,7 @@ switch_on_hover = true
 [node name="NetworkButton" type="MenuButton" parent="HBoxContainer"]
 margin_left = 93.0
 margin_right = 158.0
-margin_bottom = 20.0
+margin_bottom = 140.0
 text = "Network"
 items = [ "Connect to...", null, 0, false, false, 1, 0, null, "", false, "Disconnect", null, 0, false, false, 2, 0, null, "", false, "Host", null, 0, false, false, 0, 0, null, "", false ]
 switch_on_hover = true
@@ -49,15 +49,15 @@ filters = PoolStringArray( "*.pgn" )
 [node name="Network" type="ConfirmationDialog" parent="."]
 margin_left = 7.0
 margin_top = 7.0
-margin_right = 207.0
-margin_bottom = 131.0
+margin_right = 1017.0
+margin_bottom = 147.0
 rect_min_size = Vector2( 400, 140 )
 window_title = "Establish Connection..."
 
 [node name="CenterContainer" type="CenterContainer" parent="Network"]
 margin_left = 8.0
 margin_top = 8.0
-margin_right = 392.0
+margin_right = 1002.0
 margin_bottom = 104.0
 size_flags_horizontal = 3
 __meta__ = {
@@ -65,16 +65,18 @@ __meta__ = {
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Network/CenterContainer"]
-margin_left = 125.0
+margin_left = 312.0
 margin_top = 8.0
-margin_right = 259.0
+margin_right = 682.0
 margin_bottom = 88.0
+rect_min_size = Vector2( 370, 0 )
 size_flags_horizontal = 3
 
 [node name="IPBlock" type="HBoxContainer" parent="Network/CenterContainer/VBoxContainer"]
-margin_right = 134.0
+margin_right = 370.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
+alignment = 1
 
 [node name="IPLabel" type="Label" parent="Network/CenterContainer/VBoxContainer/IPBlock"]
 margin_top = 5.0
@@ -87,7 +89,7 @@ __meta__ = {
 
 [node name="IP" type="LineEdit" parent="Network/CenterContainer/VBoxContainer/IPBlock"]
 margin_left = 76.0
-margin_right = 134.0
+margin_right = 370.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 placeholder_text = "IP Address"
@@ -97,14 +99,15 @@ __meta__ = {
 
 [node name="PortBlock" type="HBoxContainer" parent="Network/CenterContainer/VBoxContainer"]
 margin_top = 28.0
-margin_right = 134.0
+margin_right = 370.0
 margin_bottom = 52.0
+size_flags_horizontal = 3
 alignment = 1
 
 [node name="PortLabel" type="Label" parent="Network/CenterContainer/VBoxContainer/PortBlock"]
-margin_left = 23.0
+margin_left = 141.0
 margin_top = 5.0
-margin_right = 49.0
+margin_right = 167.0
 margin_bottom = 19.0
 text = "Port"
 __meta__ = {
@@ -112,23 +115,25 @@ __meta__ = {
 }
 
 [node name="Port" type="LineEdit" parent="Network/CenterContainer/VBoxContainer/PortBlock"]
-margin_left = 53.0
-margin_right = 111.0
+margin_left = 171.0
+margin_right = 229.0
 margin_bottom = 24.0
+text = "1234"
+placeholder_text = "1234"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="PasswordBlock" type="HBoxContainer" parent="Network/CenterContainer/VBoxContainer"]
 margin_top = 56.0
-margin_right = 134.0
+margin_right = 370.0
 margin_bottom = 80.0
 alignment = 1
 
 [node name="PasswordLabel" type="Label" parent="Network/CenterContainer/VBoxContainer/PasswordBlock"]
-margin_left = 6.0
+margin_left = 124.0
 margin_top = 5.0
-margin_right = 66.0
+margin_right = 184.0
 margin_bottom = 19.0
 text = "Password"
 __meta__ = {
@@ -136,8 +141,8 @@ __meta__ = {
 }
 
 [node name="Password" type="LineEdit" parent="Network/CenterContainer/VBoxContainer/PasswordBlock"]
-margin_left = 70.0
-margin_right = 128.0
+margin_left = 188.0
+margin_right = 246.0
 margin_bottom = 24.0
 secret = true
 __meta__ = {
