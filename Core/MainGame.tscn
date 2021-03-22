@@ -1,8 +1,11 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://BoardTile.png" type="Texture" id=2]
-[ext_resource path="res://MainGame.gd" type="Script" id=3]
-[ext_resource path="res://Board.gd" type="Script" id=4]
+[ext_resource path="res://Chess/Sprites/BoardTile.png" type="Texture" id=2]
+[ext_resource path="res://Core/MainGame.gd" type="Script" id=3]
+[ext_resource path="res://Chess/Board.gd" type="Script" id=4]
+
+
+
 
 [sub_resource type="TileSet" id=1]
 0/name = "BoardTile.png 0"

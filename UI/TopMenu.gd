@@ -1,8 +1,9 @@
-extends PanelContainer
+extends Node
 
 enum FILE_MENU {NEW, LOAD, SAVE, QUIT} 
 enum GAME_MENU {PREV, NEXT, EDIT, CLOSE}
 enum NETWORK {HOST, CONNECT, DISCONNECT}
+enum HELP_MENU {HELP, ABOUT} 
 
 const TAGS = ["Event", "Site", "Date", "Round", "White", "Black",
               "Result", "Annotator", "PlyCount", "TimeControl", 
@@ -31,9 +32,10 @@ var port : String
 var pw : String
 
 func _ready() -> void:
-    $HBoxContainer/MenuButton.get_popup().connect("id_pressed", self, "_on_FileMenu_id_pressed")
-    $HBoxContainer/GameButton.get_popup().connect("id_pressed", self, "_on_GameMenu_id_pressed")
-    $HBoxContainer/NetworkButton.get_popup().connect("id_pressed", self, "_on_NetworkMenu_id_pressed")
+    $MenuBar/HBoxContainer/MenuButton.get_popup().connect("id_pressed", self, "_on_FileMenu_id_pressed")
+    $MenuBar/HBoxContainer/GameButton.get_popup().connect("id_pressed", self, "_on_GameMenu_id_pressed")
+    $MenuBar/HBoxContainer/NetworkButton.get_popup().connect("id_pressed", self, "_on_NetworkMenu_id_pressed")
+    $MenuBar/HBoxContainer/HelpButton.get_popup().connect("id_pressed", self, "_on_HelpMenu_id_pressed")
 
 func _on_FileMenu_id_pressed(id: int) -> void:
     match id:
@@ -57,6 +59,13 @@ func _on_FileMenu_id_pressed(id: int) -> void:
             self.file_loc = ""
         FILE_MENU.QUIT:
             get_tree().quit()
+
+func _on_HelpMenu_id_pressed(id: int) -> void:
+    match id:
+        HELP_MENU.HELP:
+            $HelpDialog.popup_centered()
+        HELP_MENU.ABOUT:
+            $CreditsDialog.popup_centered()
         
 func _on_GameMenu_id_pressed(id: int) -> void:
     match id:
@@ -85,7 +94,7 @@ func _on_NetworkMenu_id_pressed(id: int) -> void:
             $Network/CenterContainer/VBoxContainer/IPBlock.hide()
             $Network.popup_centered()
             yield($Network, "popup_hide")
-            yield(get_tree().create_timer(0.1), "timeout")            
+            yield(get_tree().create_timer(0.1), "timeout")  
             if self.port:
                 emit_signal("host", int(self.port), self.pw)
             self.IP = ""

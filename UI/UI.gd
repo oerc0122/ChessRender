@@ -9,7 +9,7 @@ signal panic_game(game)
 
 var lastTurn = -1
 var lastGame = -1
-var TurnsTab = preload("res://TurnHolder.tscn")
+var TurnsTab = preload("res://UI/TurnHolder.tscn")
 
 func set_headers():
     var currGame = game.currGame

@@ -1,6 +1,6 @@
 extends TileMap
 class_name Board
-onready var PIECE = preload("res://Piece.tscn")
+onready var PIECE = preload("res://Chess/Piece.tscn")
 onready var game = get_parent()
 
 const LET = {"a":1, "b":2, "c":3, "d":4, "e":5, "f":6, "g":7, "h":8}

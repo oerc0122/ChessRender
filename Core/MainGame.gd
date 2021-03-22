@@ -56,7 +56,7 @@ remotesync func _load_turn(turn: int, loadGame: int = -1):
 func _on_Board_piece_moved(turn) -> void:
     self.currPlayer = 1 - self.currPlayer
     var branching = currTurn < currGame.nTurns()-1
-    print(branching)
+
     if branching:
         var newBranch = branch(currGame, currTurn)
         new_game(newBranch)

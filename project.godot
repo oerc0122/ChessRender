@@ -12,27 +12,27 @@ _global_script_classes=[ {
 "base": "TileMap",
 "class": "Board",
 "language": "GDScript",
-"path": "res://Board.gd"
+"path": "res://Chess/Board.gd"
 }, {
 "base": "Node",
 "class": "FileParser",
 "language": "GDScript",
-"path": "res://FileParser.gd"
+"path": "res://Chess/FileParser.gd"
 }, {
 "base": "Resource",
 "class": "Game",
 "language": "GDScript",
-"path": "res://Game.gd"
+"path": "res://Chess/Game.gd"
 }, {
 "base": "Sprite",
 "class": "Piece",
 "language": "GDScript",
-"path": "res://Piece.gd"
+"path": "res://Chess/Piece.gd"
 }, {
 "base": "Resource",
 "class": "Turn",
 "language": "GDScript",
-"path": "res://Turn.gd"
+"path": "res://Chess/Turn.gd"
 } ]
 _global_script_class_icons={
 "Board": "",
@@ -45,12 +45,12 @@ _global_script_class_icons={
 [application]
 
 config/name="ChessRender"
-run/main_scene="res://UI.tscn"
+run/main_scene="res://UI/UI.tscn"
 config/icon="res://icon.png"
 
 [autoload]
 
-Globals="*res://Globals.gd"
+Globals="*res://Core/Globals.gd"
 
 [rendering]
 

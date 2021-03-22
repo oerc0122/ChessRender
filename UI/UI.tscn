@@ -1,11 +1,11 @@
 [gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://MainGame.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Root.gd" type="Script" id=2]
-[ext_resource path="res://UIPanel.tscn" type="PackedScene" id=3]
-[ext_resource path="res://TopMenu.tscn" type="PackedScene" id=4]
-[ext_resource path="res://FileParser.tscn" type="PackedScene" id=5]
-[ext_resource path="res://Lobby.gd" type="Script" id=6]
+[ext_resource path="res://Core/MainGame.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Core/Root.gd" type="Script" id=2]
+[ext_resource path="res://UI/UIPanel.tscn" type="PackedScene" id=3]
+[ext_resource path="res://UI/TopMenu.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Chess/FileParser.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Core/Lobby.gd" type="Script" id=6]
 
 [node name="Root" type="Node"]
 script = ExtResource( 2 )
@@ -22,16 +22,22 @@ margin_bottom = 14.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 custom_constants/separation = -2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="TopMenu" parent="VBoxContainer" instance=ExtResource( 4 )]
-margin_bottom = 154.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 1024.0
+margin_bottom = 35.0
+rect_min_size = Vector2( 0, 35 )
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
-margin_top = 152.0
+margin_top = 33.0
 margin_right = 1024.0
 margin_bottom = 600.0
 mouse_filter = 2
@@ -43,7 +49,7 @@ __meta__ = {
 
 [node name="ViewportContainer" type="ViewportContainer" parent="VBoxContainer/HBoxContainer"]
 margin_right = 720.0
-margin_bottom = 448.0
+margin_bottom = 567.0
 mouse_filter = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -54,7 +60,7 @@ __meta__ = {
 }
 
 [node name="MainGame" parent="VBoxContainer/HBoxContainer/ViewportContainer" instance=ExtResource( 1 )]
-size = Vector2( 720, 448 )
+size = Vector2( 720, 567 )
 handle_input_locally = false
 render_target_update_mode = 3
 
@@ -64,7 +70,7 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 724.0
 margin_right = 1024.0
-margin_bottom = 448.0
+margin_bottom = 567.0
 size_flags_horizontal = 1
 
 [node name="FileParser" parent="." instance=ExtResource( 5 )]
@@ -104,6 +110,7 @@ size_flags_vertical = 3
 script = ExtResource( 6 )
 [connection signal="close_game" from="VBoxContainer/TopMenu" to="VBoxContainer/HBoxContainer/UIPanel" method="close_game"]
 [connection signal="connect" from="VBoxContainer/TopMenu" to="Lobby" method="client"]
+[connection signal="disconnect" from="VBoxContainer/TopMenu" to="Lobby" method="_close_connection"]
 [connection signal="host" from="VBoxContainer/TopMenu" to="Lobby" method="host"]
 [connection signal="load_game" from="VBoxContainer/TopMenu" to="." method="_on_TopMenu_load_game"]
 [connection signal="new_game" from="VBoxContainer/TopMenu" to="." method="_on_TopMenu_new_game"]
@@ -116,7 +123,6 @@ script = ExtResource( 6 )
 [connection signal="reload_games" from="VBoxContainer/HBoxContainer/ViewportContainer/MainGame" to="VBoxContainer/HBoxContainer/UIPanel" method="reload_games"]
 [connection signal="turn_updated" from="VBoxContainer/HBoxContainer/ViewportContainer/MainGame" to="VBoxContainer/HBoxContainer/UIPanel" method="update_turn"]
 [connection signal="panic_game" from="VBoxContainer/HBoxContainer/UIPanel" to="." method="new_game"]
-[connection signal="read" from="FileParser" to="." method="_on_FileParser_read"]
 [connection signal="server_connected" from="Lobby" to="." method="_on_Lobby_server_connected"]
 [connection signal="server_disconnected" from="Lobby" to="." method="_on_Lobby_server_disconnected"]
 [connection signal="server_started" from="Lobby" to="." method="_on_Lobby_server_started"]

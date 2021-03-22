@@ -3,7 +3,7 @@ extends Node
 onready var UIMain = $VBoxContainer/HBoxContainer/UIPanel
 onready var MainGame = $VBoxContainer/HBoxContainer/ViewportContainer/MainGame
 onready var GamesList = $GamesDialog/ScrollContainer/VBoxContainer    
-onready var ConnectionStatus = $VBoxContainer/TopMenu/HBoxContainer/ConnectionStatus
+onready var ConnectionStatus = $VBoxContainer/TopMenu/MenuBar/HBoxContainer/ConnectionStatus
 func new_game(game: Game):
     MainGame.new_game(game)
 

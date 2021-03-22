@@ -1,80 +1,141 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://TopMenu.gd" type="Script" id=1]
+[ext_resource path="res://UI/TopMenu.gd" type="Script" id=1]
 
-[node name="TopMenu" type="PanelContainer"]
-pause_mode = 2
-margin_right = 1024.0
-margin_bottom = 34.0
+[node name="TopMenu" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="MenuBar" type="PanelContainer" parent="."]
+pause_mode = 2
+anchor_right = 1.0
+margin_bottom = 34.0
+rect_min_size = Vector2( 0, 35 )
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MenuBar"]
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 1017.0
-margin_bottom = 147.0
+margin_bottom = 28.0
 
-[node name="MenuButton" type="MenuButton" parent="HBoxContainer"]
+[node name="MenuButton" type="MenuButton" parent="MenuBar/HBoxContainer"]
 margin_right = 35.0
-margin_bottom = 140.0
+margin_bottom = 21.0
 text = "File"
 items = [ "New Game...", null, 0, false, false, 0, 0, null, "", false, "Load Game...", null, 0, false, false, 1, 0, null, "", false, "Save Game...", null, 0, false, false, 2, 0, null, "", false, "Quit", null, 0, false, false, 3, 0, null, "", false ]
 switch_on_hover = true
 
-[node name="GameButton" type="MenuButton" parent="HBoxContainer"]
+[node name="GameButton" type="MenuButton" parent="MenuBar/HBoxContainer"]
 margin_left = 39.0
 margin_right = 89.0
-margin_bottom = 140.0
+margin_bottom = 21.0
 text = "Game"
 items = [ "Previous Turn", null, 0, false, false, 0, 0, null, "", false, "Next Turn", null, 0, false, false, 1, 0, null, "", false, "Edit Game Details", null, 0, false, false, 2, 0, null, "", false, "Close Game", null, 0, false, false, 3, 0, null, "", false ]
 switch_on_hover = true
 
-[node name="NetworkButton" type="MenuButton" parent="HBoxContainer"]
+[node name="NetworkButton" type="MenuButton" parent="MenuBar/HBoxContainer"]
 margin_left = 93.0
 margin_right = 158.0
-margin_bottom = 140.0
+margin_bottom = 21.0
 text = "Network"
 items = [ "Connect to...", null, 0, false, false, 1, 0, null, "", false, "Disconnect", null, 0, false, false, 2, 0, null, "", false, "Host", null, 0, false, false, 0, 0, null, "", false ]
 switch_on_hover = true
 
-[node name="VSeparator" type="VSeparator" parent="HBoxContainer"]
+[node name="HelpButton" type="MenuButton" parent="MenuBar/HBoxContainer"]
 margin_left = 162.0
-margin_right = 166.0
-margin_bottom = 140.0
+margin_right = 204.0
+margin_bottom = 21.0
+text = "Help"
+items = [ "Help", null, 0, false, false, 0, 0, null, "", false, "About", null, 0, false, false, 1, 0, null, "", false ]
+switch_on_hover = true
 
-[node name="ConnectionStatus" type="Label" parent="HBoxContainer"]
-margin_left = 170.0
-margin_top = 63.0
-margin_right = 213.0
-margin_bottom = 77.0
+[node name="VSeparator" type="VSeparator" parent="MenuBar/HBoxContainer"]
+margin_left = 208.0
+margin_right = 212.0
+margin_bottom = 21.0
+
+[node name="ConnectionStatus" type="Label" parent="MenuBar/HBoxContainer"]
+margin_left = 216.0
+margin_top = 3.0
+margin_right = 259.0
+margin_bottom = 17.0
 text = "Offline"
 align = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="FileDialog" type="FileDialog" parent="."]
-margin_right = 416.0
-margin_bottom = 184.0
-rect_min_size = Vector2( 400, 140 )
-filters = PoolStringArray( "*.pgn" )
-
-[node name="Network" type="ConfirmationDialog" parent="."]
-visible = true
+[node name="CreditsDialog" type="AcceptDialog" parent="."]
 margin_left = 7.0
 margin_top = 7.0
-margin_right = 1017.0
+margin_right = 324.0
+margin_bottom = 116.0
+window_title = "Credits"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CenterContainer" type="VBoxContainer" parent="CreditsDialog"]
+margin_left = 8.0
+margin_top = 8.0
+margin_right = 309.0
+margin_bottom = 73.0
+
+[node name="Credits" type="Label" parent="CreditsDialog/CenterContainer"]
+margin_right = 301.0
+margin_bottom = 65.0
+text = "Developed by J Wilkins 2021
+
+Chess Sprites found at:
+http://clipart-library.com/clipart/pcqrGKzLi.htm"
+align = 1
+
+[node name="HelpDialog" type="AcceptDialog" parent="."]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 324.0
+margin_bottom = 116.0
+window_title = "Help"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CenterContainer" type="VBoxContainer" parent="HelpDialog"]
+margin_left = 8.0
+margin_top = 8.0
+margin_right = 309.0
+margin_bottom = 73.0
+
+[node name="Help" type="Label" parent="HelpDialog/CenterContainer"]
+margin_right = 301.0
+margin_bottom = 14.0
+text = "Use the L/R arrow keys to move turns "
+align = 1
+
+[node name="Network" type="ConfirmationDialog" parent="."]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 407.0
 margin_bottom = 147.0
 rect_min_size = Vector2( 400, 140 )
 window_title = "Establish Connection..."
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="CenterContainer" type="CenterContainer" parent="Network"]
 margin_left = 8.0
 margin_top = 8.0
-margin_right = 1002.0
+margin_right = 392.0
 margin_bottom = 104.0
 size_flags_horizontal = 3
 __meta__ = {
@@ -82,9 +143,9 @@ __meta__ = {
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Network/CenterContainer"]
-margin_left = 312.0
+margin_left = 7.0
 margin_top = 8.0
-margin_right = 682.0
+margin_right = 377.0
 margin_bottom = 88.0
 rect_min_size = Vector2( 370, 0 )
 size_flags_horizontal = 3
@@ -110,6 +171,8 @@ margin_right = 370.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 placeholder_text = "IP Address"
+caret_blink = true
+caret_blink_speed = 0.5
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -137,6 +200,8 @@ margin_right = 229.0
 margin_bottom = 24.0
 text = "1234"
 placeholder_text = "1234"
+caret_blink = true
+caret_blink_speed = 0.5
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -161,6 +226,8 @@ __meta__ = {
 margin_left = 188.0
 margin_right = 246.0
 margin_bottom = 24.0
+caret_blink = true
+caret_blink_speed = 0.5
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -194,6 +261,8 @@ margin_left = 86.0
 margin_right = 994.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
+caret_blink = true
+caret_blink_speed = 0.5
 
 [node name="Site" type="Label" parent="GameDetailPopup/GridContainer"]
 margin_top = 33.0
@@ -206,6 +275,8 @@ margin_left = 86.0
 margin_top = 28.0
 margin_right = 994.0
 margin_bottom = 52.0
+caret_blink = true
+caret_blink_speed = 0.5
 
 [node name="Date" type="Label" parent="GameDetailPopup/GridContainer"]
 margin_top = 61.0
@@ -218,6 +289,8 @@ margin_left = 86.0
 margin_top = 56.0
 margin_right = 994.0
 margin_bottom = 80.0
+caret_blink = true
+caret_blink_speed = 0.5
 
 [node name="Round" type="Label" parent="GameDetailPopup/GridContainer"]
 margin_top = 89.0
@@ -230,6 +303,8 @@ margin_left = 86.0
 margin_top = 84.0
 margin_right = 994.0
 margin_bottom = 108.0
+caret_blink = true
+caret_blink_speed = 0.5
 
 [node name="White" type="Label" parent="GameDetailPopup/GridContainer"]
 margin_top = 117.0
@@ -242,6 +317,8 @@ margin_left = 86.0
 margin_top = 112.0
 margin_right = 994.0
 margin_bottom = 136.0
+caret_blink = true
+caret_blink_speed = 0.5
 
 [node name="Black" type="Label" parent="GameDetailPopup/GridContainer"]
 margin_top = 145.0
@@ -254,6 +331,8 @@ margin_left = 86.0
 margin_top = 140.0
 margin_right = 994.0
 margin_bottom = 164.0
+caret_blink = true
+caret_blink_speed = 0.5
 
 [node name="Result" type="Label" parent="GameDetailPopup/GridContainer"]
 margin_top = 173.0
@@ -266,6 +345,8 @@ margin_left = 86.0
 margin_top = 168.0
 margin_right = 994.0
 margin_bottom = 192.0
+caret_blink = true
+caret_blink_speed = 0.5
 
 [node name="Annotator" type="Label" parent="GameDetailPopup/GridContainer"]
 margin_top = 201.0
@@ -278,6 +359,8 @@ margin_left = 86.0
 margin_top = 196.0
 margin_right = 994.0
 margin_bottom = 220.0
+caret_blink = true
+caret_blink_speed = 0.5
 
 [node name="PlyCount" type="Label" parent="GameDetailPopup/GridContainer"]
 margin_top = 229.0
@@ -290,6 +373,8 @@ margin_left = 86.0
 margin_top = 224.0
 margin_right = 994.0
 margin_bottom = 248.0
+caret_blink = true
+caret_blink_speed = 0.5
 
 [node name="TimeControl" type="Label" parent="GameDetailPopup/GridContainer"]
 margin_top = 257.0
@@ -302,6 +387,8 @@ margin_left = 86.0
 margin_top = 252.0
 margin_right = 994.0
 margin_bottom = 276.0
+caret_blink = true
+caret_blink_speed = 0.5
 
 [node name="Time" type="Label" parent="GameDetailPopup/GridContainer"]
 margin_top = 285.0
@@ -314,6 +401,8 @@ margin_left = 86.0
 margin_top = 280.0
 margin_right = 994.0
 margin_bottom = 304.0
+caret_blink = true
+caret_blink_speed = 0.5
 
 [node name="Termination" type="Label" parent="GameDetailPopup/GridContainer"]
 margin_top = 313.0
@@ -326,6 +415,8 @@ margin_left = 86.0
 margin_top = 308.0
 margin_right = 994.0
 margin_bottom = 332.0
+caret_blink = true
+caret_blink_speed = 0.5
 
 [node name="Mode" type="Label" parent="GameDetailPopup/GridContainer"]
 margin_top = 341.0
@@ -338,6 +429,8 @@ margin_left = 86.0
 margin_top = 336.0
 margin_right = 994.0
 margin_bottom = 360.0
+caret_blink = true
+caret_blink_speed = 0.5
 
 [node name="FEN" type="Label" parent="GameDetailPopup/GridContainer"]
 margin_top = 369.0
@@ -350,5 +443,13 @@ margin_left = 86.0
 margin_top = 364.0
 margin_right = 994.0
 margin_bottom = 388.0
-[connection signal="file_selected" from="FileDialog" to="." method="_on_FileDialog_file_selected"]
+caret_blink = true
+caret_blink_speed = 0.5
+
+[node name="FileDialog" type="FileDialog" parent="."]
+margin_right = 416.0
+margin_bottom = 184.0
+rect_min_size = Vector2( 400, 140 )
+filters = PoolStringArray( "*.pgn" )
 [connection signal="confirmed" from="Network" to="." method="_on_Network_confirmed"]
+[connection signal="file_selected" from="FileDialog" to="MenuBar" method="_on_FileDialog_file_selected"]
