@@ -123,6 +123,7 @@ script = ExtResource( 6 )
 [connection signal="reload_games" from="VBoxContainer/HBoxContainer/ViewportContainer/MainGame" to="VBoxContainer/HBoxContainer/UIPanel" method="reload_games"]
 [connection signal="turn_updated" from="VBoxContainer/HBoxContainer/ViewportContainer/MainGame" to="VBoxContainer/HBoxContainer/UIPanel" method="update_turn"]
 [connection signal="panic_game" from="VBoxContainer/HBoxContainer/UIPanel" to="." method="new_game"]
+[connection signal="read" from="FileParser" to="." method="_on_FileParser_read"]
 [connection signal="server_connected" from="Lobby" to="." method="_on_Lobby_server_connected"]
 [connection signal="server_disconnected" from="Lobby" to="." method="_on_Lobby_server_disconnected"]
 [connection signal="server_started" from="Lobby" to="." method="_on_Lobby_server_started"]

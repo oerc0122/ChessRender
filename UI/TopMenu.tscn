@@ -452,4 +452,4 @@ margin_bottom = 184.0
 rect_min_size = Vector2( 400, 140 )
 filters = PoolStringArray( "*.pgn" )
 [connection signal="confirmed" from="Network" to="." method="_on_Network_confirmed"]
-[connection signal="file_selected" from="FileDialog" to="MenuBar" method="_on_FileDialog_file_selected"]
+[connection signal="file_selected" from="FileDialog" to="." method="_on_FileDialog_file_selected"]

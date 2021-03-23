@@ -46,6 +46,7 @@ func _on_FileMenu_id_pressed(id: int) -> void:
             $FileDialog.window_title = "Load game"
             $FileDialog.popup_centered()
             yield($FileDialog, "popup_hide")
+            print(self.file_loc)
             if self.file_loc:
                 emit_signal("load_game", self.file_loc)
             self.file_loc = ""
